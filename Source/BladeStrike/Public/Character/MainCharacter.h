@@ -12,6 +12,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UCurveFloat;
 class AItem;
+class AWeapon;
 
 UCLASS()
 class BLADESTRIKE_API AMainCharacter : public ACharacter
@@ -20,8 +21,11 @@ class BLADESTRIKE_API AMainCharacter : public ACharacter
 
 public:
 	AMainCharacter();
+
+	UFUNCTION()
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(BlueprintReadWrite)
@@ -36,21 +40,53 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	float direction;
 
+	UFUNCTION()
+	void EquipMainWeapon();
+
+	UFUNCTION()
+	void UnEquipMainWeapon();
+
 	FORCEINLINE void SetOverlappingItem(AItem* item) { overlappingItem = item; }
 	FORCEINLINE ECharacterState GetCharacterState() const { return charState; }
 	FORCEINLINE EActionState GetActionState() const { return actionState; }
+	FORCEINLINE ECombatTypes GetCombatState() const { return combatType; }
+	FORCEINLINE void SetCombatState(ECombatTypes state) { combatType = state; }
+
+	FORCEINLINE AWeapon* GetMainWeapon() const { return mainWeapon; }
 
 protected:
+	UFUNCTION()
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
 	void MoveForward(float value);
+
+	UFUNCTION()
 	void MoveRight(float value);
+
+	UFUNCTION()
 	void Turn(float value);
+
+	UFUNCTION()
 	void LookUp(float value);
+
+	UFUNCTION()
 	void Sprint(float value);
+
+	UFUNCTION()
 	void JumpPressed();
+
+	UFUNCTION()
 	void InteractPressed();
+
+	UFUNCTION()
 	void Attack();
 
+	UFUNCTION()
+	void AttackToggle();
+
+
+	UPROPERTY()
 	FTimeline CurveTimeline;
 
 	UPROPERTY(EditAnywhere)
@@ -59,8 +95,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UCurveFloat* CurveFloatReset;
 
-
+	UPROPERTY()
 	FTimeline CurveTimelineReset;
+
+	UPROPERTY()
 	FTimeline CurveTimelineIncrease;
 
 	UPROPERTY()
@@ -72,6 +110,7 @@ protected:
 	UPROPERTY()
 	float rotspeed;
 
+	UPROPERTY()
 	bool resetTimeline;
 
 private:	
@@ -82,18 +121,25 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* Camera;
 
+	UFUNCTION()
 	void SetDirection();
 
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* overlappingItem;
 
+	UPROPERTY(EditAnywhere)
 	ECharacterState charState = ECharacterState::Unequipped;
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EActionState actionState = EActionState::Free;
 
+	UPROPERTY(EditAnywhere)
+	ECombatTypes combatType = ECombatTypes::None;
+
+	UPROPERTY()
 	UAnimInstance* animInstance;
 
-	UPROPERTY(EditAnywhere)
-	UAnimMontage* attackMontage;
+	UPROPERTY()
+	AWeapon* mainWeapon;
+
 };

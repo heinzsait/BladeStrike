@@ -4,17 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Character/CharacterTypesh.h"
 #include "Item.generated.h"
-
 
 class USphereComponent;
 class UNiagaraComponent;
-
-enum class EItemState : uint8
-{
-	Hovering,
-	Equipped
-};
 
 UCLASS()
 class BLADESTRIKE_API AItem : public AActor
@@ -23,8 +17,13 @@ class BLADESTRIKE_API AItem : public AActor
 
 public:
 	AItem();
+
+	UFUNCTION()
 	virtual void Tick(float DeltaTime) override;
+
 protected:
+
+	UFUNCTION()
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
@@ -35,7 +34,6 @@ protected:
 
 	UFUNCTION(BlueprintPure)
 	float TransformedSin();
-
 
 	UFUNCTION()
 	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -49,9 +47,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* Sphere;
 
+	UPROPERTY()
 	EItemState state;
 
 private:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float RunningTime;
 

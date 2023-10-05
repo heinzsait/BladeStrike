@@ -119,7 +119,12 @@ void AMainCharacter::InteractPressed()
 	AWeapon* overlappingWeapon = Cast<AWeapon>(overlappingItem);
 	if (overlappingWeapon)
 	{
-		overlappingWeapon->Equip(this->GetMesh(), FName("RightHandSocket"));
+		if (mainWeapon != nullptr)
+		{
+			mainWeapon->DropWeapon();
+		}
+		overlappingWeapon->Equip(this->GetMesh());
+		mainWeapon = overlappingWeapon;
 		charState = ECharacterState::Equipped;
 	}
 }
@@ -127,12 +132,14 @@ void AMainCharacter::InteractPressed()
 void AMainCharacter::Attack()
 {
 	if (charState != ECharacterState::Equipped) return;
+	if (!mainWeapon) return;
+	if (!mainWeapon->attackMontage) return;
 
 	if (actionState == EActionState::Free)
 	{
 		if (animInstance)
 		{
-			animInstance->Montage_Play(attackMontage);
+			animInstance->Montage_Play(mainWeapon->attackMontage);
 			actionState = EActionState::Attacking1;
 		}
 	}
@@ -143,6 +150,45 @@ void AMainCharacter::Attack()
 	else if (actionState == EActionState::CanAttack3)
 	{
 		actionState = EActionState::Attacking3;
+	}
+}
+
+void AMainCharacter::AttackToggle()
+{
+	if (!mainWeapon) return;
+
+	if (charState == ECharacterState::Unequipped)
+	{
+		if (animInstance)
+		{
+			animInstance->Montage_Play(mainWeapon->swordDrawMontage);
+			charState = ECharacterState::Equipped;
+		}
+	}
+	else if (charState == ECharacterState::Equipped)
+	{
+		if (animInstance)
+		{
+			animInstance->Montage_Play(mainWeapon->swordDisarmMontage);
+			charState = ECharacterState::Unequipped;
+		}
+	}
+
+}
+
+void AMainCharacter::EquipMainWeapon()
+{
+	if (mainWeapon)
+	{
+		mainWeapon->Equip(this->GetMesh());
+	}
+}
+
+void AMainCharacter::UnEquipMainWeapon()
+{
+	if (mainWeapon)
+	{
+		mainWeapon->UnEquip(this->GetMesh());
 	}
 }
 
@@ -193,6 +239,8 @@ void AMainCharacter::SetDirection()
 }
 
 
+
+
 // Called every frame
 void AMainCharacter::Tick(float DeltaTime)
 {
@@ -213,4 +261,5 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction(FName("Jump"), IE_Pressed, this, &AMainCharacter::JumpPressed);
 	PlayerInputComponent->BindAction(FName("Interact"), IE_Pressed, this, &AMainCharacter::InteractPressed);
 	PlayerInputComponent->BindAction(FName("Attack"), IE_Pressed, this, &AMainCharacter::Attack);
+	PlayerInputComponent->BindAction(FName("AttackToggle"), IE_Pressed, this, &AMainCharacter::AttackToggle);
 }

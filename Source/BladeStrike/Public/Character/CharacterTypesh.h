@@ -17,3 +17,19 @@ enum class EActionState : uint8
 	CanAttack3 UMETA(DisplayName = "CanAttack3"),
 	Attacking3 UMETA(DisplayName = "Attacking3")
 };
+
+UENUM(BlueprintType)
+enum class ECombatTypes : uint8
+{
+	None UMETA(DisplayName = "None"),
+	LightSword UMETA(DisplayName = "LightSword"),
+	HeavySword UMETA(DisplayName = "HeavySword")
+};
+
+UENUM(BlueprintType)
+enum class EItemState : uint8
+{
+	Hovering,
+	Equipped,
+	Unequipped
+};

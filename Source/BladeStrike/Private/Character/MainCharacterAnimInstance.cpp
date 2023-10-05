@@ -22,6 +22,8 @@ void UMainCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	if (character)
 	{
 		charState = character->GetCharacterState();
+		combatType = character->GetCombatState();
+
 		isInAir = movementComp->IsFalling();
 
 		inputX = character->inputX;

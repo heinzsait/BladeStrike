@@ -17,7 +17,11 @@ class BLADESTRIKE_API UMainCharacterAnimInstance : public UAnimInstance
 	
 
 public:
+
+	UFUNCTION()
 	virtual void NativeInitializeAnimation() override;
+
+	UFUNCTION()
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -52,5 +56,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	ECharacterState charState = ECharacterState::Unequipped;
+
+	UPROPERTY(BlueprintReadOnly)
+	ECombatTypes combatType = ECombatTypes::None;
 
 };
