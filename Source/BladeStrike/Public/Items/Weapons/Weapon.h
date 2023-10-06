@@ -42,10 +42,16 @@ public:
 	ECombatTypes combatType;
 
 	UPROPERTY()
-	bool canInteract = true;
+	bool isAttached = false;
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* attackMontage;
+
+	UPROPERTY(EditAnywhere)
+	TArray<UAnimMontage*> attackMontages;
+
+	UPROPERTY(EditAnywhere)
+	int attackIndex = 0;
 	
 protected:
 	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;

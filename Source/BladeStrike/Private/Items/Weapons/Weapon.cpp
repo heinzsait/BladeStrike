@@ -9,7 +9,7 @@ AWeapon::AWeapon()
 	handSocket = FName("RightHandSocket");
 	attachSocket = FName("SwordHipSocket");
 	combatType = ECombatTypes::LightSword;
-	canInteract = true;
+	isAttached = false;
 }
 
 void AWeapon::Equip(USceneComponent* InParent)
@@ -24,7 +24,7 @@ void AWeapon::Equip(USceneComponent* InParent)
 		player->SetCombatState(combatType);
 	}
 
-	canInteract = false;
+	isAttached = true;
 }
 
 void AWeapon::UnEquip(USceneComponent* InParent)
@@ -46,12 +46,12 @@ void AWeapon::DropWeapon()
 	ItemMesh->DetachFromComponent(transformRules);
 	SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
 	state = EItemState::Hovering;
-	canInteract = true;
+	isAttached = false;
 }
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(canInteract)
+	if(!isAttached)
 		Super::OnSphereOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 }
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/TimelineComponent.h"
+#include "Character/CombatComponent.h"
 #include "GameFramework/Character.h"
 #include "CharacterTypesh.h"
 #include "MainCharacter.generated.h"
@@ -49,10 +50,13 @@ public:
 	FORCEINLINE void SetOverlappingItem(AItem* item) { overlappingItem = item; }
 	FORCEINLINE ECharacterState GetCharacterState() const { return charState; }
 	FORCEINLINE EActionState GetActionState() const { return actionState; }
-	FORCEINLINE ECombatTypes GetCombatState() const { return combatType; }
-	FORCEINLINE void SetCombatState(ECombatTypes state) { combatType = state; }
 
-	FORCEINLINE AWeapon* GetMainWeapon() const { return mainWeapon; }
+	FORCEINLINE UCombatComponent* GetCombatComponent() const { return combatComp; }
+
+	FORCEINLINE ECombatTypes GetCombatState() const { return combatComp->GetCombatState(); }
+	FORCEINLINE void SetCombatState(ECombatTypes state) { combatComp->SetCombatState(state); }
+
+	//FORCEINLINE AWeapon* GetMainWeapon() const { return mainWeapon; }
 
 protected:
 	UFUNCTION()
@@ -133,13 +137,9 @@ private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EActionState actionState = EActionState::Free;
 
-	UPROPERTY(EditAnywhere)
-	ECombatTypes combatType = ECombatTypes::None;
-
 	UPROPERTY()
 	UAnimInstance* animInstance;
 
 	UPROPERTY()
-	AWeapon* mainWeapon;
-
+	UCombatComponent* combatComp;
 };

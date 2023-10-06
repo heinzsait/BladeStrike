@@ -37,8 +37,9 @@ AMainCharacter::AMainCharacter()
 	CameraBoom->CameraLagMaxDistance = 10.0f;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(FName("MainCamera"));
-	Camera->SetupAttachment(CameraBoom);
-	
+	Camera->SetupAttachment(CameraBoom);	
+
+	combatComp = CreateDefaultSubobject<UCombatComponent>(FName("Combat Component"));
 }
 
 
@@ -119,12 +120,12 @@ void AMainCharacter::InteractPressed()
 	AWeapon* overlappingWeapon = Cast<AWeapon>(overlappingItem);
 	if (overlappingWeapon)
 	{
-		if (mainWeapon != nullptr)
+		if (combatComp->GetMainWeapon() != nullptr)
 		{
-			mainWeapon->DropWeapon();
+			combatComp->GetMainWeapon()->DropWeapon();
 		}
 		overlappingWeapon->Equip(this->GetMesh());
-		mainWeapon = overlappingWeapon;
+		combatComp->SetMainWeapon(overlappingWeapon);
 		charState = ECharacterState::Equipped;
 	}
 }
@@ -132,14 +133,24 @@ void AMainCharacter::InteractPressed()
 void AMainCharacter::Attack()
 {
 	if (charState != ECharacterState::Equipped) return;
-	if (!mainWeapon) return;
-	if (!mainWeapon->attackMontage) return;
+	if (!combatComp->GetMainWeapon()) return;
+	//if (!combatComp->GetMainWeapon()->attackMontage) return;
 
-	if (actionState == EActionState::Free)
+	if (combatComp->CanAttack())
+	{
+		combatComp->PerformAttack();
+	}
+	else
+	{
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("cant attack...")));
+	}
+
+	/*if (actionState == EActionState::Free)
 	{
 		if (animInstance)
 		{
-			animInstance->Montage_Play(mainWeapon->attackMontage);
+			animInstance->Montage_Play(combatComp->GetMainWeapon()->attackMontage);
 			actionState = EActionState::Attacking1;
 		}
 	}
@@ -150,18 +161,18 @@ void AMainCharacter::Attack()
 	else if (actionState == EActionState::CanAttack3)
 	{
 		actionState = EActionState::Attacking3;
-	}
+	}*/
 }
 
 void AMainCharacter::AttackToggle()
 {
-	if (!mainWeapon) return;
+	if (!combatComp->GetMainWeapon()) return;
 
 	if (charState == ECharacterState::Unequipped)
 	{
 		if (animInstance)
 		{
-			animInstance->Montage_Play(mainWeapon->swordDrawMontage);
+			animInstance->Montage_Play(combatComp->GetMainWeapon()->swordDrawMontage);
 			charState = ECharacterState::Equipped;
 		}
 	}
@@ -169,26 +180,27 @@ void AMainCharacter::AttackToggle()
 	{
 		if (animInstance)
 		{
-			animInstance->Montage_Play(mainWeapon->swordDisarmMontage);
+			animInstance->Montage_Play(combatComp->GetMainWeapon()->swordDisarmMontage);
 			charState = ECharacterState::Unequipped;
 		}
 	}
 
 }
 
+
 void AMainCharacter::EquipMainWeapon()
 {
-	if (mainWeapon)
+	if (combatComp->GetMainWeapon())
 	{
-		mainWeapon->Equip(this->GetMesh());
+		combatComp->GetMainWeapon()->Equip(this->GetMesh());
 	}
 }
 
 void AMainCharacter::UnEquipMainWeapon()
 {
-	if (mainWeapon)
+	if (combatComp->GetMainWeapon())
 	{
-		mainWeapon->UnEquip(this->GetMesh());
+		combatComp->GetMainWeapon()->UnEquip(this->GetMesh());
 	}
 }
 
