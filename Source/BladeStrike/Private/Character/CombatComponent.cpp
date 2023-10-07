@@ -47,10 +47,21 @@ void UCombatComponent::ResetWeapon()
 void UCombatComponent::PerformAttack()
 {
 	UAnimMontage* _attackMontage = nullptr;
-	if(!character->GetCharacterMovement()->IsFalling())
-		_attackMontage = mainWeapon->attackMontages[mainWeapon->attackIndex];
-	else if(character->GetCharacterMovement()->IsFalling() || character->GetCharacterMovement()->IsFlying())
-		_attackMontage = mainWeapon->fallingAttackMontages[mainWeapon->attackIndex];
+	if (!(character->GetCharacterMovement()->IsFalling() || character->GetCharacterMovement()->IsFlying())) // Character on ground
+	{
+		if(!character->isSprinting)
+			_attackMontage = mainWeapon->attackMontages[mainWeapon->attackIndex];
+		else
+			_attackMontage = mainWeapon->sprintAttackMontages[mainWeapon->attackIndex];
+	}
+	else // Character in air
+	{
+		if (!character->isSprinting)
+			_attackMontage = mainWeapon->fallingAttackMontages[mainWeapon->attackIndex];
+		else 
+			_attackMontage = mainWeapon->sprintJumpAttackMontage;
+	}
+
 
 	if (animInstance && _attackMontage)
 	{

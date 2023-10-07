@@ -47,6 +47,9 @@ public:
 	TArray<UAnimMontage*> sprintAttackMontages;
 
 	UPROPERTY(EditAnywhere)
+	UAnimMontage* sprintJumpAttackMontage;
+
+	UPROPERTY(EditAnywhere)
 	int attackIndex = 0;
 
 	FORCEINLINE void SetCollision(bool flag) { collisionEnabled = flag; }

@@ -60,7 +60,7 @@ void AMainCharacter::BeginPlay()
 
 void AMainCharacter::MoveForward(float value)
 {
-	inputZ = value;
+	inputZ = value * 2; 
 
 	if (Controller && inputZ != 0)
 	{
@@ -74,7 +74,7 @@ void AMainCharacter::MoveForward(float value)
 
 void AMainCharacter::MoveRight(float value)
 {
-	inputX = value;
+	inputX = value * 2;
 
 	if (Controller && inputX != 0)
 	{
