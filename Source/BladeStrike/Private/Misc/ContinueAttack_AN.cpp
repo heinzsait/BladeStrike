@@ -4,6 +4,7 @@
 #include "Misc/ContinueAttack_AN.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Character/MainCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 void UContinueAttack_AN::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
@@ -11,5 +12,6 @@ void UContinueAttack_AN::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 	if (character)
 	{
 		character->GetCombatComponent()->SetCanAttack(true);
+		//character->GetCharacterMovement()->bAllowPhysicsRotationDuringAnimRootMotion = true;
 	}
 }

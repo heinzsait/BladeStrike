@@ -14,7 +14,6 @@ class BLADESTRIKE_API UResetAttackCombo_AN : public UAnimNotify
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION()
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 	
 };

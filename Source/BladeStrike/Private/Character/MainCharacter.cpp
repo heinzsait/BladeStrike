@@ -143,11 +143,6 @@ void AMainCharacter::Attack()
 	{
 		combatComp->PerformAttack();
 	}
-	else
-	{
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("cant attack...")));
-	}
 
 	/*if (actionState == EActionState::Free)
 	{

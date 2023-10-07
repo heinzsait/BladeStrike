@@ -4,6 +4,7 @@
 #include "Misc/ResetAttackCombo_AN.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Character/MainCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 void UResetAttackCombo_AN::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
@@ -11,5 +12,6 @@ void UResetAttackCombo_AN::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 	if (character)
 	{
 		character->GetCombatComponent()->ResetWeapon();
+		//character->GetCharacterMovement()->bAllowPhysicsRotationDuringAnimRootMotion = true;
 	}
 }

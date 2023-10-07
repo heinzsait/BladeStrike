@@ -18,10 +18,8 @@ class BLADESTRIKE_API UMainCharacterAnimInstance : public UAnimInstance
 
 public:
 
-	UFUNCTION()
 	virtual void NativeInitializeAnimation() override;
 
-	UFUNCTION()
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 
 	UPROPERTY(BlueprintReadOnly)

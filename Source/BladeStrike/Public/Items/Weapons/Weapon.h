@@ -6,9 +6,8 @@
 #include "Items/Item.h"
 #include "Weapon.generated.h"
 
-/**
- * 
- */
+class UBoxComponent;
+
 UCLASS()
 class BLADESTRIKE_API AWeapon : public AItem
 {
@@ -27,12 +26,6 @@ public:
 	void DropWeapon();
 
 	UPROPERTY(EditAnywhere)
-	FName attachSocket;
-
-	UPROPERTY(EditAnywhere)
-	FName handSocket;
-
-	UPROPERTY(EditAnywhere)
 	UAnimMontage* swordDrawMontage;
 
 	UPROPERTY(EditAnywhere)
@@ -41,8 +34,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	ECombatTypes combatType;
 
-	UPROPERTY()
-	bool isAttached = false;
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* attackMontage;
@@ -52,10 +43,39 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	int attackIndex = 0;
+
+	FORCEINLINE void SetCollision(bool flag) { collisionEnabled = flag; }
 	
 protected:
+	virtual void BeginPlay() override;
 	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 
 	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
+
+	UFUNCTION()
+	void OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+private:
+
+	UPROPERTY()
+	bool isAttached = false;
+
+	UPROPERTY(EditAnywhere)
+	FName attachSocket;
+
+	UPROPERTY(EditAnywhere)
+	FName handSocket;
+
+	UPROPERTY(VisibleAnywhere)
+	UBoxComponent* weaponBox;
+
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* traceStart;
+
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* traceEnd;
+
+	UPROPERTY()
+	bool collisionEnabled;
 
 };

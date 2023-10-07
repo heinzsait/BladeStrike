@@ -15,7 +15,6 @@ class BLADESTRIKE_API UContinueAttack_AN : public UAnimNotify
 	GENERATED_BODY()
 
 public:
-	UFUNCTION()
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 	
 };

@@ -23,10 +23,8 @@ class BLADESTRIKE_API AMainCharacter : public ACharacter
 public:
 	AMainCharacter();
 
-	UFUNCTION()
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION()
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(BlueprintReadWrite)
@@ -65,7 +63,6 @@ public:
 	//FORCEINLINE AWeapon* GetMainWeapon() const { return mainWeapon; }
 
 protected:
-	UFUNCTION()
 	virtual void BeginPlay() override;
 
 	UFUNCTION()

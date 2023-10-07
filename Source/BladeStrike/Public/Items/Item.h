@@ -18,12 +18,10 @@ class BLADESTRIKE_API AItem : public AActor
 public:
 	AItem();
 
-	UFUNCTION()
 	virtual void Tick(float DeltaTime) override;
 
 protected:
 
-	UFUNCTION()
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
