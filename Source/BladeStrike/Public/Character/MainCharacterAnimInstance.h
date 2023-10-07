@@ -55,6 +55,9 @@ public:
 	float inputZ;
 
 	UPROPERTY(BlueprintReadOnly)
+	bool isDodging;
+
+	UPROPERTY(BlueprintReadOnly)
 	ECharacterState charState = ECharacterState::Unequipped;
 
 	UPROPERTY(BlueprintReadOnly)

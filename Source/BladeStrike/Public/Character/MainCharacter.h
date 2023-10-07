@@ -33,6 +33,12 @@ public:
 	bool isSprinting;
 
 	UPROPERTY(BlueprintReadWrite)
+	bool isDodging;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool canDodge;
+
+	UPROPERTY(BlueprintReadWrite)
 	float inputX;
 
 	UPROPERTY(BlueprintReadWrite)
@@ -89,6 +95,9 @@ protected:
 	UFUNCTION()
 	void AttackToggle();
 
+	UFUNCTION()
+	void Dodge();
+
 
 	UPROPERTY()
 	FTimeline CurveTimeline;
@@ -142,4 +151,7 @@ private:
 
 	UPROPERTY()
 	UCombatComponent* combatComp;
+
+	UPROPERTY()
+	float dodgeTimer = 0.0f;
 };

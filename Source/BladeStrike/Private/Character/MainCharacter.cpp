@@ -40,6 +40,8 @@ AMainCharacter::AMainCharacter()
 	Camera->SetupAttachment(CameraBoom);	
 
 	combatComp = CreateDefaultSubobject<UCombatComponent>(FName("Combat Component"));
+
+	canDodge = true;
 }
 
 
@@ -112,7 +114,8 @@ void AMainCharacter::Sprint(float value)
 
 void AMainCharacter::JumpPressed()
 {
-	Jump();
+	if(!animInstance->IsAnyMontagePlaying() && !isDodging)
+		Jump();
 }
 
 void AMainCharacter::InteractPressed()
@@ -187,6 +190,16 @@ void AMainCharacter::AttackToggle()
 
 }
 
+void AMainCharacter::Dodge()
+{
+	if (canDodge)
+	{
+		isDodging = true;
+		canDodge = false;
+		dodgeTimer = 0.0f;
+	}
+}
+
 
 void AMainCharacter::EquipMainWeapon()
 {
@@ -259,6 +272,17 @@ void AMainCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	SetDirection();	
+
+	if (!canDodge)
+	{
+		if(dodgeTimer < 1.2f)
+			dodgeTimer += DeltaTime;
+		else
+		{
+			dodgeTimer = 0.0f;
+			canDodge = true;
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -274,4 +298,5 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction(FName("Interact"), IE_Pressed, this, &AMainCharacter::InteractPressed);
 	PlayerInputComponent->BindAction(FName("Attack"), IE_Pressed, this, &AMainCharacter::Attack);
 	PlayerInputComponent->BindAction(FName("AttackToggle"), IE_Pressed, this, &AMainCharacter::AttackToggle);
+	PlayerInputComponent->BindAction(FName("Dodge"), IE_Pressed, this, &AMainCharacter::Dodge);
 }

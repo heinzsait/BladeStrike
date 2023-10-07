@@ -25,6 +25,10 @@ void UMainCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		combatType = character->GetCombatState();
 
 		isInAir = movementComp->IsFalling();
+		isDodging = character->isDodging;
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Purple, FString::Printf(TEXT("dodging = %d"), isDodging));
 
 		inputX = character->inputX;
 		inputZ = character->inputZ;
