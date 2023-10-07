@@ -8,22 +8,23 @@ enum class ECharacterState : uint8
 };
 
 UENUM(BlueprintType)
-enum class EActionState : uint8
-{
-	Free UMETA(DisplayName = "Free"),
-	Attacking1 UMETA(DisplayName = "Attacking1"),
-	CanAttack2 UMETA(DisplayName = "CanAttack2"),
-	Attacking2 UMETA(DisplayName = "Attacking2"),
-	CanAttack3 UMETA(DisplayName = "CanAttack3"),
-	Attacking3 UMETA(DisplayName = "Attacking3")
-};
-
-UENUM(BlueprintType)
 enum class ECombatTypes : uint8
 {
 	None UMETA(DisplayName = "None"),
-	LightSword UMETA(DisplayName = "LightSword"),
-	HeavySword UMETA(DisplayName = "HeavySword")
+	LightSword UMETA(DisplayName = "Light Sword"),
+	HeavySword UMETA(DisplayName = "Heavy Sword")
+};
+
+UENUM(BlueprintType)
+enum class ECharacterActions : uint8
+{
+	None UMETA(DisplayName = "None"),
+	LightAttack UMETA(DisplayName = "Light Attack"),
+	HeavyAttack UMETA(DisplayName = "Heavy Attack"),
+	ChargedAttack UMETA(DisplayName = "Charged Attack"),
+	FallingAttack UMETA(DisplayName = "Falling Attack"),
+	SpecialAttack UMETA(DisplayName = "Special Attack"),
+	SprintingAttack UMETA(DisplayName = "Sprinting Attack")
 };
 
 UENUM(BlueprintType)

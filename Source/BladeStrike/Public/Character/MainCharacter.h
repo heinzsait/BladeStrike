@@ -7,6 +7,7 @@
 #include "Character/CombatComponent.h"
 #include "GameFramework/Character.h"
 #include "CharacterTypesh.h"
+#include "Character/StateManagerComponent.h"
 #include "MainCharacter.generated.h"
 
 class USpringArmComponent;
@@ -52,13 +53,15 @@ public:
 	void UnEquipMainWeapon();
 
 	FORCEINLINE void SetOverlappingItem(AItem* item) { overlappingItem = item; }
-	FORCEINLINE ECharacterState GetCharacterState() const { return charState; }
-	FORCEINLINE EActionState GetActionState() const { return actionState; }
+	//FORCEINLINE ECharacterState GetCharacterState() const { return charState; }
 
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return combatComp; }
-
 	FORCEINLINE ECombatTypes GetCombatState() const { return combatComp->GetCombatState(); }
 	FORCEINLINE void SetCombatState(ECombatTypes state) { combatComp->SetCombatState(state); }
+
+	FORCEINLINE UStateManagerComponent* GetStateManagerComponent() const { return stateManager; }
+	FORCEINLINE ECharacterState GetCharacterState() const { return stateManager->GetCurrentCharacterState(); }
+	FORCEINLINE void SetCharacterState(ECharacterState state) { stateManager->SetCurrentCharacterState(state); }
 
 	//FORCEINLINE AWeapon* GetMainWeapon() const { return mainWeapon; }
 
@@ -137,17 +140,17 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* overlappingItem;
 
-	UPROPERTY(EditAnywhere)
-	ECharacterState charState = ECharacterState::Unequipped;
-
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	EActionState actionState = EActionState::Free;
+	//UPROPERTY(EditAnywhere)
+	//ECharacterState charState = ECharacterState::Unequipped;
 
 	UPROPERTY()
 	UAnimInstance* animInstance;
 
 	UPROPERTY()
 	UCombatComponent* combatComp;
+
+	UPROPERTY()
+	UStateManagerComponent* stateManager;
 
 	UPROPERTY()
 	float dodgeTimer = 0.0f;

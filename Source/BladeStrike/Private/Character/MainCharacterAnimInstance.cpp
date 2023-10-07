@@ -3,6 +3,7 @@
 
 #include "Character/MainCharacterAnimInstance.h"
 #include "Character/MainCharacter.h"
+#include "Character/StateManagerComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 void UMainCharacterAnimInstance::NativeInitializeAnimation()
@@ -21,6 +22,7 @@ void UMainCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	if (character)
 	{
+		//charState = character->GetCharacterState();
 		charState = character->GetCharacterState();
 		combatType = character->GetCombatState();
 

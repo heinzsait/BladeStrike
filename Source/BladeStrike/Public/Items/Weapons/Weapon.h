@@ -34,17 +34,23 @@ public:
 	UPROPERTY(EditAnywhere)
 	ECombatTypes combatType;
 
-
-	UPROPERTY(EditAnywhere)
-	UAnimMontage* attackMontage;
-
 	UPROPERTY(EditAnywhere)
 	TArray<UAnimMontage*> attackMontages;
+
+	UPROPERTY(EditAnywhere)
+	TArray<UAnimMontage*> heavyAttackMontages;
+
+	UPROPERTY(EditAnywhere)
+	TArray<UAnimMontage*> fallingAttackMontages;
+
+	UPROPERTY(EditAnywhere)
+	TArray<UAnimMontage*> sprintAttackMontages;
 
 	UPROPERTY(EditAnywhere)
 	int attackIndex = 0;
 
 	FORCEINLINE void SetCollision(bool flag) { collisionEnabled = flag; }
+	FORCEINLINE void ResetWeapon() { attackIndex = 0; }
 	
 protected:
 	virtual void BeginPlay() override;

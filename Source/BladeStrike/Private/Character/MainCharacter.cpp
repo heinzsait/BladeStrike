@@ -8,6 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Items/Weapons/Weapon.h"
+#include "GameplayTagContainer.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -40,6 +41,7 @@ AMainCharacter::AMainCharacter()
 	Camera->SetupAttachment(CameraBoom);	
 
 	combatComp = CreateDefaultSubobject<UCombatComponent>(FName("Combat Component"));
+	stateManager = CreateDefaultSubobject<UStateManagerComponent>(FName("State Manager Component"));
 
 	canDodge = true;
 }
@@ -58,7 +60,6 @@ void AMainCharacter::BeginPlay()
 
 void AMainCharacter::MoveForward(float value)
 {
-	if (actionState != EActionState::Free) return;
 	inputZ = value;
 
 	if (Controller && inputZ != 0)
@@ -73,7 +74,6 @@ void AMainCharacter::MoveForward(float value)
 
 void AMainCharacter::MoveRight(float value)
 {
-	if (actionState != EActionState::Free) return;
 	inputX = value;
 
 	if (Controller && inputX != 0)
@@ -129,57 +129,41 @@ void AMainCharacter::InteractPressed()
 		}
 		overlappingWeapon->Equip(this->GetMesh());
 		combatComp->SetMainWeapon(overlappingWeapon);
-		charState = ECharacterState::Equipped;
+
+		SetCharacterState(ECharacterState::Equipped);
+		//charState = ECharacterState::Equipped;
 	}
 }
 
 void AMainCharacter::Attack()
 {
-	if (charState != ECharacterState::Equipped) return;
+	if (GetCharacterState() == ECharacterState::Unequipped) return;
 	if (!combatComp->GetMainWeapon()) return;
-	//if (!combatComp->GetMainWeapon()->attackMontage) return;
 
 	if (combatComp->CanAttack())
 	{
 		combatComp->PerformAttack();
 	}
-
-	/*if (actionState == EActionState::Free)
-	{
-		if (animInstance)
-		{
-			animInstance->Montage_Play(combatComp->GetMainWeapon()->attackMontage);
-			actionState = EActionState::Attacking1;
-		}
-	}
-	else if (actionState == EActionState::CanAttack2)
-	{
-		actionState = EActionState::Attacking2;
-	}
-	else if (actionState == EActionState::CanAttack3)
-	{
-		actionState = EActionState::Attacking3;
-	}*/
 }
 
 void AMainCharacter::AttackToggle()
 {
 	if (!combatComp->GetMainWeapon()) return;
 
-	if (charState == ECharacterState::Unequipped)
+	if (GetCharacterState() == ECharacterState::Unequipped)
 	{
 		if (animInstance)
 		{
 			animInstance->Montage_Play(combatComp->GetMainWeapon()->swordDrawMontage);
-			charState = ECharacterState::Equipped;
+			SetCharacterState(ECharacterState::Equipped);
 		}
 	}
-	else if (charState == ECharacterState::Equipped)
+	else if (GetCharacterState() == ECharacterState::Equipped)
 	{
 		if (animInstance)
 		{
 			animInstance->Montage_Play(combatComp->GetMainWeapon()->swordDisarmMontage);
-			charState = ECharacterState::Unequipped;
+			SetCharacterState(ECharacterState::Unequipped);
 		}
 	}
 

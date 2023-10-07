@@ -3,6 +3,7 @@
 
 #include "Character/CombatComponent.h"
 #include "Character/MainCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Items/Weapons/Weapon.h"
 
 // Sets default values for this component's properties
@@ -35,15 +36,6 @@ void UCombatComponent::BeginPlay()
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (animInstance)
-	{
-		//if (!animInstance->IsAnyMontagePlaying())
-			//mainWeapon->attackIndex = 0;
-	}
-
-	/*if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Purple, FString::Printf(TEXT("can attack = %d"), canAttack));*/
 }
 
 void UCombatComponent::ResetWeapon()
@@ -54,12 +46,16 @@ void UCombatComponent::ResetWeapon()
 
 void UCombatComponent::PerformAttack()
 {
-	UAnimMontage* _attackMontage = mainWeapon->attackMontages[mainWeapon->attackIndex];
+	UAnimMontage* _attackMontage = nullptr;
+	if(!character->GetCharacterMovement()->IsFalling())
+		_attackMontage = mainWeapon->attackMontages[mainWeapon->attackIndex];
+	else if(character->GetCharacterMovement()->IsFalling() || character->GetCharacterMovement()->IsFlying())
+		_attackMontage = mainWeapon->fallingAttackMontages[mainWeapon->attackIndex];
 
 	if (animInstance && _attackMontage)
 	{
 		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("playing montage index = %d"), mainWeapon->attackIndex));
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString("playing montage = " + _attackMontage->GetName()));
 
 		if (!animInstance->Montage_IsPlaying(_attackMontage))
 		{
