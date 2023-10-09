@@ -9,7 +9,7 @@ public class BladeStrikeTarget : TargetRules
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
-
-		ExtraModuleNames.AddRange( new string[] { "BladeStrike" } );
+        IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_3;
+        ExtraModuleNames.AddRange( new string[] { "BladeStrike" } );
 	}
 }

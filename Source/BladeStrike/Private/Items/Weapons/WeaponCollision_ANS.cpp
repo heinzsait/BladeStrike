@@ -27,5 +27,6 @@ void UWeaponCollision_ANS::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequ
 	if (character)
 	{
 		character->GetCombatComponent()->GetMainWeapon()->SetCollision(false);
+		character->GetCombatComponent()->GetMainWeapon()->ignoreActors.Empty();
 	}
 }

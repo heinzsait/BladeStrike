@@ -57,6 +57,9 @@ public:
 
 	FORCEINLINE void SetCollision(bool flag) { collisionEnabled = flag; }
 	FORCEINLINE void ResetWeapon() { attackIndex = 0; }
+
+	UPROPERTY()
+	TArray<AActor*> ignoreActors;
 	
 protected:
 	virtual void BeginPlay() override;

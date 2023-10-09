@@ -20,6 +20,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -28,5 +29,23 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void GetHit(const FVector& impactPoint) override;
+
+	UFUNCTION()
+	void DirectionalHitReact(const FVector& impactPoint);
+
+	UFUNCTION()
+	void PlayHitReaction(const FName sectionName);
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* hitReactionMontages;
+
+	UPROPERTY(BlueprintReadOnly)
+	class AMainCharacter* player;
+
+	UPROPERTY(EditAnywhere)
+	TArray<class ATargetPoint*> patrolPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBehaviorTree* behaviourTree;
 
 };
