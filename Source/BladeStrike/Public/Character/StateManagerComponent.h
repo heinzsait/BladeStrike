@@ -44,8 +44,21 @@ public:
 	UFUNCTION()
 	void SetCurrentCharacterState(ECharacterState state);
 
+
+	UFUNCTION()
+	ECharacterRotation GetCharacterRotationState();
+
+	UFUNCTION()
+	void SetCharacterRotationState(ECharacterRotation state);
+
 	UFUNCTION()
 	void ResetState();
+
+	UFUNCTION()
+	ECharacterActions GetCharacterActionState();
+
+	UFUNCTION()
+	void SetCharacterActionState(ECharacterActions state);
 
 
 protected:
@@ -54,6 +67,7 @@ protected:
 
 private:	
 
+	UPROPERTY()
 	FGameplayTag currentState;
 
 	UFUNCTION()
@@ -62,6 +76,7 @@ private:
 	UFUNCTION()
 	void OnStateEnded(const FGameplayTag& state);
 
+	UPROPERTY()
 	ECharacterState currentCharacterState;
 
 	UFUNCTION()
@@ -69,5 +84,14 @@ private:
 
 	UFUNCTION()
 	void OnCharStateEnded(const ECharacterState state);
+
+	UPROPERTY()
+	ECharacterRotation rotationState;
+
+	UPROPERTY()
+	ECharacterActions characterActionState;
+
+	UPROPERTY()
+	class AMainCharacter* character;
 		
 };

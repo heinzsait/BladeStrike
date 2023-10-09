@@ -5,6 +5,7 @@
 #include "Character/MainCharacter.h"
 #include "Character/StateManagerComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void UMainCharacterAnimInstance::NativeInitializeAnimation()
 {
@@ -22,15 +23,12 @@ void UMainCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	if (character)
 	{
-		//charState = character->GetCharacterState();
 		charState = character->GetCharacterState();
 		combatType = character->GetCombatState();
+		rotationState = character->GetRotationState();
 
 		isInAir = movementComp->IsFalling();
 		isDodging = character->isDodging;
-
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Purple, FString::Printf(TEXT("dodging = %d"), isDodging));
 
 		inputX = character->inputX;
 		inputZ = character->inputZ;
@@ -60,5 +58,19 @@ void UMainCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 			}
 		}
 
+		CalculateStrafeDirection();
+
+	}
+}
+
+void UMainCharacterAnimInstance::CalculateStrafeDirection()
+{
+	if (rotationState == ECharacterRotation::Camera)
+	{
+		direction = CalculateDirection(character->GetCharacterMovement()->Velocity, character->GetActorRotation());
+		speed = UKismetMathLibrary::VSizeXY(character->GetCharacterMovement()->Velocity);
+
+		//if (GEngine)
+			//GEngine->AddOnScreenDebugMessage(-1, GetWorld()->DeltaTimeSeconds, FColor::Purple, FString::Printf(TEXT("speed = %d direction = %s") , speed , direction));
 	}
 }

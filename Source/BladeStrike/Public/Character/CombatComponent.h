@@ -28,14 +28,23 @@ public:
 	FORCEINLINE void ResetSavedAttack() { attackSaved = false; }
 	FORCEINLINE bool GetSavedAttack() const { return attackSaved; }
 
-	FORCEINLINE void SetCanAttack(bool flag) { canAttack = flag; }
-	FORCEINLINE bool CanAttack() const { return canAttack; }
+	//FORCEINLINE void SetCanAttack(bool flag) { canAttack = flag; }
+	//FORCEINLINE bool CanAttack() const { return canAttack; }
 
 	UFUNCTION()
 	void ResetWeapon();
 
 	UFUNCTION()
 	void PerformAttack();
+
+	UFUNCTION()
+	void PerformDodge();
+
+	UFUNCTION()
+	FRotator GetDodgeDirection();
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* unarmedDodgeMontage;
 
 protected:
 	// Called when the game starts

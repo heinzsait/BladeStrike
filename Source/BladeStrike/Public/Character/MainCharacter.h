@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/TimelineComponent.h"
-#include "Character/CombatComponent.h"
 #include "GameFramework/Character.h"
 #include "CharacterTypesh.h"
+#include "Character/CombatComponent.h"
 #include "Character/StateManagerComponent.h"
 #include "MainCharacter.generated.h"
 
@@ -15,6 +15,7 @@ class UCameraComponent;
 class UCurveFloat;
 class AItem;
 class AWeapon;
+class UTargetingComponent;
 
 UCLASS()
 class BLADESTRIKE_API AMainCharacter : public ACharacter
@@ -46,6 +47,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	float direction;
 
+	UPROPERTY(VisibleAnywhere)
+	UCameraComponent* Camera;
+
 	UFUNCTION()
 	void EquipMainWeapon();
 
@@ -62,6 +66,20 @@ public:
 	FORCEINLINE UStateManagerComponent* GetStateManagerComponent() const { return stateManager; }
 	FORCEINLINE ECharacterState GetCharacterState() const { return stateManager->GetCurrentCharacterState(); }
 	FORCEINLINE void SetCharacterState(ECharacterState state) { stateManager->SetCurrentCharacterState(state); }
+
+	FORCEINLINE ECharacterRotation GetRotationState() const { return stateManager->GetCharacterRotationState(); }
+
+	UFUNCTION()
+	bool IsTargetLocked() const;
+
+	UFUNCTION()
+	void SetCharacterActionState(ECharacterActions state);
+
+	UFUNCTION()
+	ECharacterActions GetCharacterActionState();
+
+	UFUNCTION()
+	USpringArmComponent* GetCameraBoom();
 
 	//FORCEINLINE AWeapon* GetMainWeapon() const { return mainWeapon; }
 
@@ -98,6 +116,9 @@ protected:
 	UFUNCTION()
 	void Dodge();
 
+	UFUNCTION()
+	void LockTarget();
+
 
 	UPROPERTY()
 	FTimeline CurveTimeline;
@@ -131,9 +152,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoom;
 
-	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* Camera;
-
 	UFUNCTION()
 	void SetDirection();
 
@@ -146,11 +164,14 @@ private:
 	UPROPERTY()
 	UAnimInstance* animInstance;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	UCombatComponent* combatComp;
 
 	UPROPERTY()
 	UStateManagerComponent* stateManager;
+
+	UPROPERTY()
+	UTargetingComponent* targetingComp;
 
 	UPROPERTY()
 	float dodgeTimer = 0.0f;

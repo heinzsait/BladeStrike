@@ -8,6 +8,13 @@ enum class ECharacterState : uint8
 };
 
 UENUM(BlueprintType)
+enum class ECharacterRotation : uint8
+{
+	Movement UMETA(DisplayName = "Movement"),
+	Camera UMETA(DisplayName = "Camera")
+};
+
+UENUM(BlueprintType)
 enum class ECombatTypes : uint8
 {
 	None UMETA(DisplayName = "None"),
@@ -19,12 +26,8 @@ UENUM(BlueprintType)
 enum class ECharacterActions : uint8
 {
 	None UMETA(DisplayName = "None"),
-	LightAttack UMETA(DisplayName = "Light Attack"),
-	HeavyAttack UMETA(DisplayName = "Heavy Attack"),
-	ChargedAttack UMETA(DisplayName = "Charged Attack"),
-	FallingAttack UMETA(DisplayName = "Falling Attack"),
-	SpecialAttack UMETA(DisplayName = "Special Attack"),
-	SprintingAttack UMETA(DisplayName = "Sprinting Attack")
+	Attacking UMETA(DisplayName = "Attacking"),
+	Dodging UMETA(DisplayName = "Dodging")
 };
 
 UENUM(BlueprintType)

@@ -11,7 +11,8 @@ void UContinueAttack_AN::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 	AMainCharacter* character = Cast<AMainCharacter>(MeshComp->GetOwner());
 	if (character)
 	{
-		character->GetCombatComponent()->SetCanAttack(true);
+		//character->GetCombatComponent()->SetCanAttack(true);
+		character->SetCharacterActionState(ECharacterActions::None);
 		//character->GetCharacterMovement()->bAllowPhysicsRotationDuringAnimRootMotion = true;
 	}
 }

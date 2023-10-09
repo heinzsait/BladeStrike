@@ -61,4 +61,11 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	ECombatTypes combatType = ECombatTypes::None;
 
+	UPROPERTY(BlueprintReadOnly)
+	ECharacterRotation rotationState = ECharacterRotation::Movement;
+
+private:
+
+	UFUNCTION()
+	void CalculateStrafeDirection();
 };

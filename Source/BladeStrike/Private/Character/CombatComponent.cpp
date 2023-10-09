@@ -5,6 +5,7 @@
 #include "Character/MainCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Items/Weapons/Weapon.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values for this component's properties
 UCombatComponent::UCombatComponent()
@@ -13,7 +14,7 @@ UCombatComponent::UCombatComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	canAttack = true;
+	//canAttack = true;
 	// ...
 }
 
@@ -71,7 +72,9 @@ void UCombatComponent::PerformAttack()
 		if (!animInstance->Montage_IsPlaying(_attackMontage))
 		{
 			animInstance->Montage_Play(_attackMontage);
-			canAttack = false;
+
+			character->SetCharacterActionState(ECharacterActions::Attacking);
+			//canAttack = false;
 		}
 		else
 		{
@@ -84,9 +87,65 @@ void UCombatComponent::PerformAttack()
 			if (_attackMontage)
 			{
 				animInstance->Montage_Play(_attackMontage);
-				canAttack = false;
+
+				//canAttack = false;
+				character->SetCharacterActionState(ECharacterActions::Attacking);
 			}
 		}
 	}
 }
 
+void UCombatComponent::PerformDodge()
+{
+	UAnimMontage* _dodgeMontage = nullptr;
+	if (character->GetCharacterState() == ECharacterState::Equipped)
+	{
+		if (!(character->GetCharacterMovement()->IsFalling() || character->GetCharacterMovement()->IsFlying())) // Character on ground
+		{
+			_dodgeMontage = mainWeapon->dodgeMontage;
+		}
+	}
+	else
+	{
+		_dodgeMontage = unarmedDodgeMontage;
+	}
+
+
+	if (animInstance && _dodgeMontage)
+	{
+		if (!animInstance->Montage_IsPlaying(_dodgeMontage))
+		{
+			if (character->IsTargetLocked())
+			{
+				_dodgeMontage->bEnableRootMotionRotation = false;
+				_dodgeMontage->bEnableRootMotionTranslation = false;
+			}
+			else
+			{
+				_dodgeMontage->bEnableRootMotionRotation = true;
+				_dodgeMontage->bEnableRootMotionTranslation = true;
+			}
+
+			animInstance->Montage_Play(_dodgeMontage);
+			character->SetCharacterActionState(ECharacterActions::Dodging);
+		}
+	}
+}
+
+FRotator UCombatComponent::GetDodgeDirection()
+{
+	if (!character) return FRotator::ZeroRotator;
+	FRotator targetRot = character->GetActorRotation();
+	if (character->GetCharacterMovement())
+	{
+		if (!character->GetCharacterMovement()->GetLastInputVector().Equals(FVector::ZeroVector, 0.001f))
+		{
+			targetRot = UKismetMathLibrary::Conv_VectorToRotator(character->GetLastMovementInputVector());
+		}
+	}
+
+	/*if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString("dodge dir = " + targetRot.ToString()));*/
+
+	return targetRot;
+}

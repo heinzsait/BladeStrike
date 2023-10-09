@@ -50,6 +50,9 @@ public:
 	UAnimMontage* sprintJumpAttackMontage;
 
 	UPROPERTY(EditAnywhere)
+	UAnimMontage* dodgeMontage;
+
+	UPROPERTY(EditAnywhere)
 	int attackIndex = 0;
 
 	FORCEINLINE void SetCollision(bool flag) { collisionEnabled = flag; }

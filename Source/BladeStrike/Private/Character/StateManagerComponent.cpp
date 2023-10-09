@@ -4,6 +4,9 @@
 #include "Character/StateManagerComponent.h"
 #include "GameplayTagContainer.h"
 #include "Character/CharacterTypesh.h"
+#include "Character/MainCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 // Sets default values for this component's properties
 UStateManagerComponent::UStateManagerComponent()
@@ -29,6 +32,9 @@ void UStateManagerComponent::BeginPlay()
 
 	OnCharStateEnterDelegate.BindDynamic(this, &UStateManagerComponent::OnCharStateBegin);
 	OnCharStateEndDelegate.BindDynamic(this, &UStateManagerComponent::OnCharStateEnded);
+
+	rotationState = ECharacterRotation::Movement;
+	character = Cast<AMainCharacter>(GetOwner());
 	
 }
 
@@ -56,9 +62,48 @@ void UStateManagerComponent::SetCurrentCharacterState(ECharacterState state)
 	}
 }
 
+ECharacterRotation UStateManagerComponent::GetCharacterRotationState()
+{
+	return rotationState;
+}
+
+void UStateManagerComponent::SetCharacterRotationState(ECharacterRotation state)
+{
+	rotationState = state;
+	switch (rotationState)
+	{
+	case ECharacterRotation::Camera:
+		//character->bUseControllerRotationYaw = false;
+		character->GetCharacterMovement()->bUseControllerDesiredRotation = true;
+		character->GetCharacterMovement()->bOrientRotationToMovement = false;
+		//character->GetCameraBoom()->bUsePawnControlRotation = false;
+		break;
+
+	case ECharacterRotation::Movement:
+		//character->bUseControllerRotationYaw = false;
+		character->GetCharacterMovement()->bUseControllerDesiredRotation = false;
+		character->GetCharacterMovement()->bOrientRotationToMovement = true;
+		//character->GetCameraBoom()->bUsePawnControlRotation = true;
+
+		break;
+	default:
+		break;
+	}
+}
+
 void UStateManagerComponent::ResetState()
 {
 
+}
+
+ECharacterActions UStateManagerComponent::GetCharacterActionState()
+{
+	return characterActionState;
+}
+
+void UStateManagerComponent::SetCharacterActionState(ECharacterActions state)
+{
+	characterActionState = state;
 }
 
 void UStateManagerComponent::OnStateBegin(const FGameplayTag& state)

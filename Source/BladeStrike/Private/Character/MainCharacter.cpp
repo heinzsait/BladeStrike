@@ -8,7 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Items/Weapons/Weapon.h"
-#include "GameplayTagContainer.h"
+#include "Character/TargetingComponent.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -42,11 +42,32 @@ AMainCharacter::AMainCharacter()
 
 	combatComp = CreateDefaultSubobject<UCombatComponent>(FName("Combat Component"));
 	stateManager = CreateDefaultSubobject<UStateManagerComponent>(FName("State Manager Component"));
+	targetingComp = CreateDefaultSubobject<UTargetingComponent>(FName("Targeting Component"));
 
 	canDodge = true;
 }
 
 
+
+bool AMainCharacter::IsTargetLocked() const
+{
+	return targetingComp->IsLocked(); 
+}
+
+void AMainCharacter::SetCharacterActionState(ECharacterActions state)
+{
+	stateManager->SetCharacterActionState(state);
+}
+
+ECharacterActions AMainCharacter::GetCharacterActionState()
+{
+	return stateManager->GetCharacterActionState();
+}
+
+USpringArmComponent* AMainCharacter::GetCameraBoom()
+{
+	return CameraBoom;
+}
 
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay()
@@ -87,8 +108,9 @@ void AMainCharacter::MoveRight(float value)
 void AMainCharacter::Turn(float value)
 {
 	if (Controller && value != 0)
-	{
-		AddControllerYawInput(value);
+	{	
+		if(stateManager->GetCharacterRotationState() == ECharacterRotation::Movement)
+			AddControllerYawInput(value);
 	}
 }
 
@@ -140,7 +162,7 @@ void AMainCharacter::Attack()
 	if (GetCharacterState() == ECharacterState::Unequipped) return;
 	if (!combatComp->GetMainWeapon()) return;
 
-	if (combatComp->CanAttack())
+	if (GetCharacterActionState() == ECharacterActions::None)
 	{
 		combatComp->PerformAttack();
 	}
@@ -171,12 +193,19 @@ void AMainCharacter::AttackToggle()
 
 void AMainCharacter::Dodge()
 {
-	if (canDodge)
+	combatComp->PerformDodge();
+	/*if (canDodge)
 	{
 		isDodging = true;
 		canDodge = false;
 		dodgeTimer = 0.0f;
-	}
+	}*/
+}
+
+void AMainCharacter::LockTarget()
+{
+	if(GetCharacterState() == ECharacterState::Equipped)
+		targetingComp->LockTarget();
 }
 
 
@@ -233,13 +262,10 @@ void AMainCharacter::SetDirection()
 		endRot = FVector(0, 0, 50);
 
 		CurveTimelineReset.PlayFromStart();
-	}
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Blue, FString::Printf(TEXT("Dir = %f"), direction));
 	}	
 	*/
+	
+	
 }
 
 
@@ -262,6 +288,11 @@ void AMainCharacter::Tick(float DeltaTime)
 			canDodge = true;
 		}
 	}
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Yellow, FString::Printf(TEXT("Action State = %d"), stateManager->GetCharacterActionState()));
+	}
 }
 
 // Called to bind functionality to input
@@ -278,4 +309,5 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction(FName("Attack"), IE_Pressed, this, &AMainCharacter::Attack);
 	PlayerInputComponent->BindAction(FName("AttackToggle"), IE_Pressed, this, &AMainCharacter::AttackToggle);
 	PlayerInputComponent->BindAction(FName("Dodge"), IE_Pressed, this, &AMainCharacter::Dodge);
+	PlayerInputComponent->BindAction(FName("LockTarget"), IE_Pressed, this, &AMainCharacter::LockTarget);
 }
