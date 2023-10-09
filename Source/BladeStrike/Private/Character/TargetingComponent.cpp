@@ -99,7 +99,7 @@ void UTargetingComponent::LockTarget()
 void UTargetingComponent::UpdateTargetRotation()
 {
 	if (!lockedOnTarget || !character) return;
-	if (character->GetCharacterActionState() == ECharacterActions::Dodging) return;
+	//if (character->GetCharacterActionState() == ECharacterActions::Dodging) return;
 
 	FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(character->GetActorLocation() + FVector(0.0f, 0.0f, 200.0f), lockedOnTarget->GetActorLocation());
 	//FRotator lerpRot = UKismetMathLibrary::RLerp(character->GetActorRotation(), targetRot, GetWorld()->DeltaTimeSeconds, true);

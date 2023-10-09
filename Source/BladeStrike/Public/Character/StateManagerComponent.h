@@ -4,12 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "GameplayTags.h"
 #include "CharacterTypesh.h"
 #include "StateManagerComponent.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStateBegin, const FGameplayTag&, state);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStateEnd, const FGameplayTag&, state);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnActionStateBegin, const ECharacterActions, state);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnActionStateEnd, const ECharacterActions, state);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCharStateBegin, const ECharacterState, state);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCharStateEnd, const ECharacterState, state);
@@ -24,10 +23,10 @@ public:
 	UStateManagerComponent();
 
 	UPROPERTY()
-	FOnStateBegin OnStateEnterDelegate;
+	FOnActionStateBegin OnActionStateEnterDelegate;
 
 	UPROPERTY()
-	FOnStateEnd OnStateEndDelegate;
+	FOnActionStateEnd OnActionStateEndDelegate;
 
 	UPROPERTY()
 	FOnCharStateBegin OnCharStateEnterDelegate;
@@ -52,6 +51,9 @@ public:
 	void SetCharacterRotationState(ECharacterRotation state);
 
 	UFUNCTION()
+	void UpdateCharacterRotation();
+
+	UFUNCTION()
 	void ResetState();
 
 	UFUNCTION()
@@ -68,15 +70,6 @@ protected:
 private:	
 
 	UPROPERTY()
-	FGameplayTag currentState;
-
-	UFUNCTION()
-	void OnStateBegin(const FGameplayTag& state);
-
-	UFUNCTION()
-	void OnStateEnded(const FGameplayTag& state);
-
-	UPROPERTY()
 	ECharacterState currentCharacterState;
 
 	UFUNCTION()
@@ -90,6 +83,15 @@ private:
 
 	UPROPERTY()
 	ECharacterActions characterActionState;
+
+	UFUNCTION()
+	void OnCharActionStateBegin(const ECharacterActions state);
+
+	UFUNCTION()
+	void OnCharActionStateEnded(const ECharacterActions state);
+
+	UFUNCTION()
+	void CharActionStateUpdate();
 
 	UPROPERTY()
 	class AMainCharacter* character;

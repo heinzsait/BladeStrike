@@ -12,6 +12,5 @@ void UResetAttackCombo_AN::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 	if (character)
 	{
 		character->GetCombatComponent()->ResetWeapon();
-		//character->GetCharacterMovement()->bAllowPhysicsRotationDuringAnimRootMotion = true;
 	}
 }

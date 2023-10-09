@@ -66,33 +66,24 @@ void UCombatComponent::PerformAttack()
 
 	if (animInstance && _attackMontage)
 	{
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString("playing montage = " + _attackMontage->GetName()));
-
 		if (!animInstance->Montage_IsPlaying(_attackMontage))
 		{
 			animInstance->Montage_Play(_attackMontage);
 
 			character->SetCharacterActionState(ECharacterActions::Attacking);
-			//canAttack = false;
-		}
-		else
-		{
-			if ((mainWeapon->attackMontages.Num() - 1) > mainWeapon->attackIndex)
-				mainWeapon->attackIndex++;
-			else
-				mainWeapon->attackIndex = 0;
-
-			_attackMontage = mainWeapon->attackMontages[mainWeapon->attackIndex];
-			if (_attackMontage)
-			{
-				animInstance->Montage_Play(_attackMontage);
-
-				//canAttack = false;
-				character->SetCharacterActionState(ECharacterActions::Attacking);
-			}
 		}
 	}
+}
+
+void UCombatComponent::SelectNextAttack()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, FString("selecting next montage"));
+
+	if ((mainWeapon->attackMontages.Num() - 1) > mainWeapon->attackIndex)
+		mainWeapon->attackIndex++;
+	else
+		mainWeapon->attackIndex = 0;
 }
 
 void UCombatComponent::PerformDodge()
@@ -115,17 +106,6 @@ void UCombatComponent::PerformDodge()
 	{
 		if (!animInstance->Montage_IsPlaying(_dodgeMontage))
 		{
-			if (character->IsTargetLocked())
-			{
-				_dodgeMontage->bEnableRootMotionRotation = false;
-				_dodgeMontage->bEnableRootMotionTranslation = false;
-			}
-			else
-			{
-				_dodgeMontage->bEnableRootMotionRotation = true;
-				_dodgeMontage->bEnableRootMotionTranslation = true;
-			}
-
 			animInstance->Montage_Play(_dodgeMontage);
 			character->SetCharacterActionState(ECharacterActions::Dodging);
 		}

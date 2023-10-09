@@ -38,6 +38,9 @@ public:
 	void PerformAttack();
 
 	UFUNCTION()
+	void SelectNextAttack();
+
+	UFUNCTION()
 	void PerformDodge();
 
 	UFUNCTION()

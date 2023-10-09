@@ -2,7 +2,6 @@
 
 
 #include "Character/StateManagerComponent.h"
-#include "GameplayTagContainer.h"
 #include "Character/CharacterTypesh.h"
 #include "Character/MainCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -27,8 +26,8 @@ void UStateManagerComponent::BeginPlay()
 	//OnStateEnterDelegate.BindUFunction(this, FName("OnStateBegin"));
 	//OnStateEndDelegate.BindUFunction(this, FName("OnStateEnded"));
 
-	OnStateEnterDelegate.BindDynamic(this, &UStateManagerComponent::OnStateBegin);
-	OnStateEndDelegate.BindDynamic(this, &UStateManagerComponent::OnStateEnded);
+	OnActionStateEnterDelegate.BindDynamic(this, &UStateManagerComponent::OnCharActionStateBegin);
+	OnActionStateEndDelegate.BindDynamic(this, &UStateManagerComponent::OnCharActionStateEnded);
 
 	OnCharStateEnterDelegate.BindDynamic(this, &UStateManagerComponent::OnCharStateBegin);
 	OnCharStateEndDelegate.BindDynamic(this, &UStateManagerComponent::OnCharStateEnded);
@@ -44,7 +43,7 @@ void UStateManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	//CharActionStateUpdate();
 }
 
 ECharacterState UStateManagerComponent::GetCurrentCharacterState()
@@ -70,20 +69,21 @@ ECharacterRotation UStateManagerComponent::GetCharacterRotationState()
 void UStateManagerComponent::SetCharacterRotationState(ECharacterRotation state)
 {
 	rotationState = state;
+	UpdateCharacterRotation();
+}
+
+void UStateManagerComponent::UpdateCharacterRotation()
+{
 	switch (rotationState)
 	{
 	case ECharacterRotation::Camera:
-		//character->bUseControllerRotationYaw = false;
 		character->GetCharacterMovement()->bUseControllerDesiredRotation = true;
 		character->GetCharacterMovement()->bOrientRotationToMovement = false;
-		//character->GetCameraBoom()->bUsePawnControlRotation = false;
 		break;
 
 	case ECharacterRotation::Movement:
-		//character->bUseControllerRotationYaw = false;
 		character->GetCharacterMovement()->bUseControllerDesiredRotation = false;
 		character->GetCharacterMovement()->bOrientRotationToMovement = true;
-		//character->GetCameraBoom()->bUsePawnControlRotation = true;
 
 		break;
 	default:
@@ -103,22 +103,11 @@ ECharacterActions UStateManagerComponent::GetCharacterActionState()
 
 void UStateManagerComponent::SetCharacterActionState(ECharacterActions state)
 {
-	characterActionState = state;
-}
-
-void UStateManagerComponent::OnStateBegin(const FGameplayTag& state)
-{
-	if (GEngine)
+	if (characterActionState != state)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Blue, FString("Entering state: " + state.ToString()));
-	}
-}
-
-void UStateManagerComponent::OnStateEnded(const FGameplayTag& state)
-{
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Blue, FString("Exiting state: " + state.ToString()));
+		OnActionStateEndDelegate.Execute(characterActionState);
+		characterActionState = state;
+		OnActionStateEnterDelegate.Execute(state);
 	}
 }
 
@@ -132,5 +121,69 @@ void UStateManagerComponent::OnCharStateEnded(const ECharacterState state)
 {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Red, FString("Exiting state: " + int(state)));
+}
+
+void UStateManagerComponent::OnCharActionStateBegin(const ECharacterActions state)
+{
+	switch (state)
+	{
+	case ECharacterActions::None:
+
+		break;
+
+	case ECharacterActions::Attacking:
+
+		break;
+
+	case ECharacterActions::Dodging:
+		character->GetCharacterMovement()->bUseControllerDesiredRotation = false;
+		character->GetCharacterMovement()->bOrientRotationToMovement = true;
+		break;
+
+	default:
+		break;
+	}
+}
+
+void UStateManagerComponent::OnCharActionStateEnded(const ECharacterActions state)
+{
+	switch (state)
+	{
+	case ECharacterActions::None:
+
+		break;
+
+	case ECharacterActions::Attacking:
+		character->GetCombatComponent()->SelectNextAttack();
+		break;
+
+	case ECharacterActions::Dodging:
+		UpdateCharacterRotation();
+		break;
+
+	default:
+		break;
+	}
+}
+
+void UStateManagerComponent::CharActionStateUpdate()
+{
+	switch (characterActionState)
+	{
+	case ECharacterActions::None:
+
+		break;
+
+	case ECharacterActions::Attacking:
+
+		break;
+
+	case ECharacterActions::Dodging:
+
+		break;
+
+	default:
+		break;
+	}
 }
 
