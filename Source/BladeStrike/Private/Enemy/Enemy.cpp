@@ -57,6 +57,8 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AEnemy::GetHit(const FVector& impactPoint)
 {
 	DirectionalHitReact(impactPoint);
+
+
 }
 
 void AEnemy::DirectionalHitReact(const FVector& impactPoint)
@@ -85,4 +87,10 @@ void AEnemy::PlayHitReaction(const FName sectionName)
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(sectionName);
 	}
 }
+
+
+//void AEnemy::TakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation, UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser)
+//{
+//
+//}
 

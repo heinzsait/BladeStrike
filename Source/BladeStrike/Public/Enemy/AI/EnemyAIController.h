@@ -20,6 +20,14 @@ public:
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnPlayerDetected(const TArray<AActor*>& DetectedPawn);
+
 private:
 	class AEnemy* enemy;
+
+	UPROPERTY(EditAnywhere)
+	class UAIPerceptionComponent* perceptionComp;
 };
