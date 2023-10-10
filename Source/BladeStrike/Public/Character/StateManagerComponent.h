@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "CharacterTypesh.h"
+#include "EnumClass.h"
 #include "StateManagerComponent.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnActionStateBegin, const ECharacterActions, state);

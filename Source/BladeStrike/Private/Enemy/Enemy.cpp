@@ -8,6 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Character/MainCharacter.h"
 #include "AIController.h"
+#include "Items/Weapons/Weapon.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -25,6 +27,7 @@ AEnemy::AEnemy()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
+
 }
 
 // Called when the game starts or when spawned
@@ -34,10 +37,10 @@ void AEnemy::BeginPlay()
 	
 	player = Cast<AMainCharacter>(UGameplayStatics::GetActorOfClass(this, AMainCharacter::StaticClass()));
 
-	/*if (player && ai)
+	if (mainWeapon)
 	{
-		ai->MoveToActor(player);
-	}*/
+		mainWeapon->Equip(this->GetMesh());
+	}
 }
 
 // Called every frame
@@ -45,6 +48,13 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AEnemy::RotateTowardsPlayer()
+{
+	FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), player->GetActorLocation());
+	auto lerpRot = FMath::RInterpTo(GetActorRotation(), targetRot, GetWorld()->DeltaTimeSeconds, 360);
+	SetActorRotation(lerpRot);
 }
 
 // Called to bind functionality to input
@@ -57,8 +67,6 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AEnemy::GetHit(const FVector& impactPoint)
 {
 	DirectionalHitReact(impactPoint);
-
-
 }
 
 void AEnemy::DirectionalHitReact(const FVector& impactPoint)
@@ -87,6 +95,56 @@ void AEnemy::PlayHitReaction(const FName sectionName)
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(sectionName);
 	}
 }
+
+float AEnemy::PerformAction()
+{
+	float duration = 0.0f;
+
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("Perform Action : %d"), actionState));
+
+	switch (actionState)
+	{
+	case ECharacterActions::None:
+
+		break;
+
+	case ECharacterActions::Attacking:
+		duration = PerformAttack();
+		break;
+
+	case ECharacterActions::Dodging:
+		
+		break;
+
+	default:
+		break;
+	}
+
+	return duration;
+}
+
+float AEnemy::PerformAttack()
+{
+	float duration = 0.0f;
+	if (GetMesh()->GetAnimInstance())
+	{
+		if (!GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+		{
+			if (mainWeapon)
+			{
+				int index = FMath::RandRange(0, mainWeapon->attackMontages.Num() - 1);
+				if (mainWeapon->attackMontages[index])
+				{
+					GetMesh()->GetAnimInstance()->Montage_Play(mainWeapon->attackMontages[index]);
+					duration = mainWeapon->attackMontages[index]->GetPlayLength();
+				}
+			}
+		}
+	}
+	return duration;
+}
+
 
 
 //void AEnemy::TakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation, UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser)

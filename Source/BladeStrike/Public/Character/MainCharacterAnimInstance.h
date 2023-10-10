@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "CharacterTypesh.h"
+#include "EnumClass.h"
 #include "MainCharacterAnimInstance.generated.h"
 
 /**

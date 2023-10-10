@@ -16,6 +16,9 @@ class BLADESTRIKE_API AWeapon : public AItem
 public:
 	AWeapon();
 
+	UPROPERTY(EditAnywhere)
+	bool isWeaponEnemy = false;
+
 	UFUNCTION()
 	void Equip(USceneComponent* InParent);
 
@@ -92,5 +95,8 @@ private:
 
 	UPROPERTY()
 	bool collisionEnabled;
+
+	UPROPERTY()
+	AActor* ownerActor;
 
 };

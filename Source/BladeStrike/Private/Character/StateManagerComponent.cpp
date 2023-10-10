@@ -2,7 +2,7 @@
 
 
 #include "Character/StateManagerComponent.h"
-#include "Character/CharacterTypesh.h"
+#include "EnumClass.h"
 #include "Character/MainCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -113,14 +113,14 @@ void UStateManagerComponent::SetCharacterActionState(ECharacterActions state)
 
 void UStateManagerComponent::OnCharStateBegin(const ECharacterState state)
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Red, FString("Entering state: " + int(state)));
+	/*if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Red, FString("Entering state: " + int(state)));*/
 }
 
 void UStateManagerComponent::OnCharStateEnded(const ECharacterState state)
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Red, FString("Exiting state: " + int(state)));
+	/*if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Red, FString("Exiting state: " + int(state)));*/
 }
 
 void UStateManagerComponent::OnCharActionStateBegin(const ECharacterActions state)
@@ -138,6 +138,10 @@ void UStateManagerComponent::OnCharActionStateBegin(const ECharacterActions stat
 	case ECharacterActions::Dodging:
 		character->GetCharacterMovement()->bUseControllerDesiredRotation = false;
 		character->GetCharacterMovement()->bOrientRotationToMovement = true;
+		break;
+
+	case ECharacterActions::GotHit:
+
 		break;
 
 	default:
@@ -161,6 +165,10 @@ void UStateManagerComponent::OnCharActionStateEnded(const ECharacterActions stat
 		UpdateCharacterRotation();
 		break;
 
+	case ECharacterActions::GotHit:
+
+		break;
+
 	default:
 		break;
 	}
@@ -179,6 +187,10 @@ void UStateManagerComponent::CharActionStateUpdate()
 		break;
 
 	case ECharacterActions::Dodging:
+
+		break;
+
+	case ECharacterActions::GotHit:
 
 		break;
 

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/HitInterface.h"
+#include "EnumClass.h"
 #include "Enemy.generated.h"
 
 UCLASS()
@@ -25,6 +26,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+	void RotateTowardsPlayer();
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -36,8 +40,17 @@ public:
 	UFUNCTION()
 	void PlayHitReaction(const FName sectionName);
 
+	UFUNCTION()
+	float PerformAction();
+
+	UFUNCTION()
+	float PerformAttack();
+
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* hitReactionMontages;
+
+	//UPROPERTY(EditAnywhere)
+	//TArray<UAnimMontage*> attackMontages;
 
 	UPROPERTY(BlueprintReadOnly)
 	class AMainCharacter* player;
@@ -47,6 +60,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBehaviorTree* behaviourTree;
+
+	UPROPERTY(EditAnywhere)
+	ECharacterState currentState = ECharacterState::Unequipped;
+
+	UPROPERTY(EditAnywhere)
+	ECharacterActions actionState = ECharacterActions::None;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class AWeapon* mainWeapon;
 
 	/*UPROPERTY()
 	FTakePointDamageSignature TakePointDamage;

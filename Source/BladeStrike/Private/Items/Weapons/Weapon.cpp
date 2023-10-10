@@ -19,7 +19,8 @@ AWeapon::AWeapon()
 	weaponBox->SetBoxExtent(FVector(3.0f, 2.0f, 40.0f));
 	weaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	weaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-	weaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	weaponBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	//weaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
 	traceStart = CreateDefaultSubobject<USceneComponent>(FName("Weapon Box Trace Start"));
 	traceStart->SetupAttachment(GetRootComponent());
@@ -41,12 +42,16 @@ void AWeapon::Equip(USceneComponent* InParent)
 	ItemMesh->AttachToComponent(InParent, transformRules, handSocket);
 	state = EItemState::Equipped;
 
-	AMainCharacter* player = Cast<AMainCharacter>(InParent->GetOwner());
-	if (player)
+	if (!isWeaponEnemy)
 	{
-		player->SetCombatState(combatType);
+		AMainCharacter* player = Cast<AMainCharacter>(InParent->GetOwner());
+		if (player)
+		{
+			player->SetCombatState(combatType);
+		}
 	}
 
+	ownerActor = InParent->GetOwner();
 	isAttached = true;
 }
 
@@ -56,10 +61,13 @@ void AWeapon::UnEquip(USceneComponent* InParent)
 	ItemMesh->AttachToComponent(InParent, transformRules, attachSocket);
 	state = EItemState::Unequipped;
 
-	AMainCharacter* player = Cast<AMainCharacter>(InParent->GetOwner());
-	if (player)
+	if (!isWeaponEnemy)
 	{
-		player->SetCombatState(ECombatTypes::None);
+		AMainCharacter* player = Cast<AMainCharacter>(InParent->GetOwner());
+		if (player)
+		{
+			player->SetCombatState(ECombatTypes::None);
+		}
 	}
 }
 
@@ -70,6 +78,7 @@ void AWeapon::DropWeapon()
 	SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
 	state = EItemState::Hovering;
 	isAttached = false;
+	ownerActor = nullptr;
 }
 
 
@@ -87,27 +96,50 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!collisionEnabled) return;
+	
+	/*if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Magenta, FString::Printf(TEXT("Detected Overlap")));*/
 
 	const FVector start = traceStart->GetComponentLocation();
 	const FVector end = traceEnd->GetComponentLocation();
 
 	TArray<AActor*> actorsToIgnore;
 	actorsToIgnore.Add(this);
+	actorsToIgnore.Add(ownerActor);
 	for (AActor* actor : ignoreActors)
 	{
 		actorsToIgnore.AddUnique(actor);
 	}
 	FHitResult hitResult;
 
-	UKismetSystemLibrary::BoxTraceSingle(this, start, end, FVector::OneVector * 5.0f, traceStart->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery1, false, actorsToIgnore, EDrawDebugTrace::ForDuration, hitResult, true);
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
+	ObjectTypesArray.Reserve(1);
+	ObjectTypesArray.Emplace(ECollisionChannel::ECC_Pawn);
+
+	UKismetSystemLibrary::SphereTraceSingleForObjects(this, start, end, 10.0f, ObjectTypesArray, false, actorsToIgnore, EDrawDebugTrace::None, hitResult, true);
+	//UKismetSystemLibrary::BoxTraceSingle(this, start, end, FVector::OneVector * 5.0f, traceStart->GetComponentRotation(), ETraceTypeQuery::, false, actorsToIgnore, EDrawDebugTrace::None, hitResult, true);
 
 	if (hitResult.GetActor())
 	{
-		IHitInterface* hitInterface = Cast<IHitInterface>(hitResult.GetActor());
-		if (hitInterface)
+		if (!isWeaponEnemy)
 		{
-			hitInterface->GetHit(hitResult.ImpactPoint);
+			IHitInterface* hitInterface = Cast<IHitInterface>(hitResult.GetActor());
+			if (hitInterface)
+			{
+				hitInterface->GetHit(hitResult.ImpactPoint);
+				ignoreActors.AddUnique(hitResult.GetActor());
+			}
 		}
-		ignoreActors.AddUnique(hitResult.GetActor());
+		else
+		{
+			/*if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Magenta, FString::Printf(TEXT("Detected Hit")));*/
+			AMainCharacter* player = Cast<AMainCharacter>(hitResult.GetActor());
+			if (player)
+			{
+				player->GetHit(hitResult.ImpactPoint);
+				ignoreActors.AddUnique(hitResult.GetActor());
+			}
+		}
 	}
 }

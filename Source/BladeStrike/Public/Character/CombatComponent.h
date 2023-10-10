@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "CharacterTypesh.h"
+#include "EnumClass.h"
 #include "CombatComponent.generated.h"
 
 class AWeapon;

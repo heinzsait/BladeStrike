@@ -24,12 +24,15 @@ public:
 
 
 private:
+
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	virtual FString GetStaticDescription() const override;
+
 	UFUNCTION()
 	void IncrementPatrolIndex(AAIController* AIController);
 	UFUNCTION()
 	void DecrementPatrolIndex(AAIController* AIController);
-	virtual FString GetStaticDescription() const override;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pawn", meta = (AllowPrivateAccess = true))
 	class AEnemy* AIEnemy;

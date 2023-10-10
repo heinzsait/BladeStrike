@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Character/CharacterTypesh.h"
+#include "EnumClass.h"
 #include "Item.generated.h"
 
 class USphereComponent;

@@ -43,8 +43,6 @@ AMainCharacter::AMainCharacter()
 	combatComp = CreateDefaultSubobject<UCombatComponent>(FName("Combat Component"));
 	stateManager = CreateDefaultSubobject<UStateManagerComponent>(FName("State Manager Component"));
 	targetingComp = CreateDefaultSubobject<UTargetingComponent>(FName("Targeting Component"));
-
-	canDodge = true;
 }
 
 
@@ -249,7 +247,14 @@ void AMainCharacter::SetDirection()
 	}
 	rotspeed = FMath::Clamp(rotspeed, 180.0f, 360.0f);
 
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, rotspeed, 0.0f);
+	if (stateManager->GetCharacterRotationState() == ECharacterRotation::Camera)
+	{
+		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+	}
+	else
+	{
+		GetCharacterMovement()->RotationRate = FRotator(0.0f, rotspeed, 0.0f);
+	}
 
 	/*
 	if (CurveFloatReset)
@@ -278,17 +283,6 @@ void AMainCharacter::Tick(float DeltaTime)
 
 	SetDirection();	
 
-	if (!canDodge)
-	{
-		if(dodgeTimer < 1.2f)
-			dodgeTimer += DeltaTime;
-		else
-		{
-			dodgeTimer = 0.0f;
-			canDodge = true;
-		}
-	}
-
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Yellow, FString::Printf(TEXT("Action State = %d"), stateManager->GetCharacterActionState()));
@@ -310,4 +304,40 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction(FName("AttackToggle"), IE_Pressed, this, &AMainCharacter::AttackToggle);
 	PlayerInputComponent->BindAction(FName("Dodge"), IE_Pressed, this, &AMainCharacter::Dodge);
 	PlayerInputComponent->BindAction(FName("LockTarget"), IE_Pressed, this, &AMainCharacter::LockTarget);
+}
+
+void AMainCharacter::GetHit(const FVector& impactPoint)
+{
+	if (stateManager->GetCharacterActionState() == ECharacterActions::Dodging) return;
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::Printf(TEXT("Player Got Hit")));
+	DirectionalHitReact(impactPoint);
+}
+
+void AMainCharacter::DirectionalHitReact(const FVector& impactPoint)
+{
+	const FVector forward = GetActorForwardVector();
+	const FVector _impactPoint = FVector(impactPoint.X, impactPoint.Y, GetActorLocation().Z);
+	const FVector toHit = (_impactPoint - GetActorLocation()).GetSafeNormal();
+
+	const double cosO = FVector::DotProduct(forward, toHit);
+	double O = FMath::RadiansToDegrees(FMath::Acos(cosO));
+	if (FVector::CrossProduct(forward, toHit).Z < 0)  O *= -1;
+
+	FName section = FName("FromBack");
+	if (O >= -45.f && O < 45.f)  section = FName("FromFront");
+	else if (O >= -135.f && O < -45.f)  section = FName("FromLeft");
+	else if (O >= 45.f && O < 135.f)  section = FName("FromRight");
+
+	PlayHitReaction(section);
+}
+
+void AMainCharacter::PlayHitReaction(const FName sectionName)
+{
+	if (GetMesh()->GetAnimInstance() && hitReactionMontages)
+	{
+		GetMesh()->GetAnimInstance()->Montage_Play(hitReactionMontages);
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection(sectionName);
+		stateManager->SetCharacterActionState(ECharacterActions::GotHit);
+	}
 }

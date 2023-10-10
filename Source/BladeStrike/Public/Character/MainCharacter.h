@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/Character.h"
-#include "CharacterTypesh.h"
+#include "EnumClass.h"
 #include "Character/CombatComponent.h"
 #include "Character/StateManagerComponent.h"
 #include "MainCharacter.generated.h"
@@ -29,14 +29,17 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION()
+	void GetHit(const FVector& impactPoint);
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* hitReactionMontages;
+
 	UPROPERTY(BlueprintReadWrite)
 	bool isSprinting;
 
 	UPROPERTY(BlueprintReadWrite)
 	bool isDodging;
-
-	UPROPERTY(BlueprintReadWrite)
-	bool canDodge;
 
 	UPROPERTY(BlueprintReadWrite)
 	float inputX;
@@ -173,6 +176,10 @@ private:
 	UPROPERTY()
 	UTargetingComponent* targetingComp;
 
-	UPROPERTY()
-	float dodgeTimer = 0.0f;
+
+	UFUNCTION()
+	void DirectionalHitReact(const FVector& impactPoint);
+
+	UFUNCTION()
+	void PlayHitReaction(const FName sectionName);
 };
