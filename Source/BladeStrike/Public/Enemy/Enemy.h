@@ -14,25 +14,46 @@ class BLADESTRIKE_API AEnemy : public ACharacter, public IHitInterface
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AEnemy();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
 	void RotateTowardsPlayer();
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	virtual void GetHit(const FVector& impactPoint) override;
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+	
+	UFUNCTION()
+	float PerformAction();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBehaviorTree* behaviourTree;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class AWeapon* mainWeapon;
+	
+	UPROPERTY(EditAnywhere)
+	ECharacterState currentState = ECharacterState::Unequipped;
+
+	UPROPERTY(EditAnywhere)
+	ECharacterActions actionState = ECharacterActions::None;
+
+	UPROPERTY(EditAnywhere)
+	TArray<class ATargetPoint*> patrolPoints;
+
+	UFUNCTION()
+	bool isAlive();
+
+protected:
+	virtual void BeginPlay() override;
+
+
+private:	
+	
+
+	UFUNCTION()
+	float PerformAttack();
 
 	UFUNCTION()
 	void DirectionalHitReact(const FVector& impactPoint);
@@ -41,38 +62,24 @@ public:
 	void PlayHitReaction(const FName sectionName);
 
 	UFUNCTION()
-	float PerformAction();
+	void Die();
 
-	UFUNCTION()
-	float PerformAttack();
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* hitReactionMontages;
 
-	//UPROPERTY(EditAnywhere)
-	//TArray<UAnimMontage*> attackMontages;
+	UPROPERTY(EditAnywhere)
+	class UAttributeComponent* attributes;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY()
 	class AMainCharacter* player;
 
 	UPROPERTY(EditAnywhere)
-	TArray<class ATargetPoint*> patrolPoints;
+	class UHealthBarComponent* healthBarWidget;
+	
+	UPROPERTY()
+	FVector hitImpactPoint;
+	
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UBehaviorTree* behaviourTree;
-
-	UPROPERTY(EditAnywhere)
-	ECharacterState currentState = ECharacterState::Unequipped;
-
-	UPROPERTY(EditAnywhere)
-	ECharacterActions actionState = ECharacterActions::None;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class AWeapon* mainWeapon;
-
-	/*UPROPERTY()
-	FTakePointDamageSignature TakePointDamage;
-
-	virtual void TakePointDamage(AActor* DamagedActor, float Damage, class AController* InstigatedBy, FVector HitLocation, class UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const class UDamageType* DamageType, AActor* DamageCauser ) override;*/
-
+	
 };

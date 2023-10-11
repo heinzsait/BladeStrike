@@ -67,6 +67,12 @@ USpringArmComponent* AMainCharacter::GetCameraBoom()
 	return CameraBoom;
 }
 
+void AMainCharacter::ResetTargetLock(AActor* _enemy)
+{
+	targetingComp->TargetedEnemyDied(_enemy);
+}
+
+
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay()
 {

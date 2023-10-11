@@ -42,7 +42,30 @@ void AEnemyAIController::OnPlayerDetected(const TArray<AActor*>& DetectedPawn)
 		FActorPerceptionBlueprintInfo info;
 		perceptionComp->GetActorsPerception(actor, info);
 
-		auto aiStimuli = info.LastSensedStimuli[0];
+		for (const auto aiStimuli : info.LastSensedStimuli)
+		{
+			if (aiStimuli.WasSuccessfullySensed())
+			{
+
+				
+
+				AMainCharacter* player = Cast<AMainCharacter>(actor);
+				if (player)
+				{
+					GetBlackboardComponent()->SetValueAsObject(FName("Target"), player);
+				}
+				else
+				{
+					AController* _playerC = Cast<AController>(actor);
+					AMainCharacter* _player = Cast<AMainCharacter>(_playerC->GetPawn());
+					if (_player)
+					{
+						GetBlackboardComponent()->SetValueAsObject(FName("Target"), _player);
+					}
+				}
+			}
+		}
+		/*auto aiStimuli = info.LastSensedStimuli[0];
 		if (aiStimuli.WasSuccessfullySensed())
 		{
 			AMainCharacter* player = Cast<AMainCharacter>(actor);
@@ -53,7 +76,11 @@ void AEnemyAIController::OnPlayerDetected(const TArray<AActor*>& DetectedPawn)
 
 				GetBlackboardComponent()->SetValueAsObject(FName("Target"), player);
 			}
-		}
+		}*/
 	}
 }
 
+void AEnemyAIController::Die()
+{
+	BrainComponent->StopLogic(FString("Dead"));
+}

@@ -81,18 +81,25 @@ void UFindNextPatrolPoint_BTTaskNode::SetPathLocation(AAIController* AIControlle
 {
 	FNavLocation Location{};
 	if (AIEnemy)
-	{
-		int index = AIController->GetBlackboardComponent()->GetValueAsInt(patrolIndex.SelectedKeyName);
-		ATargetPoint* point = AIEnemy->patrolPoints[index];
-
-		if (point)
+	{	
+		if (!AIEnemy->patrolPoints.IsEmpty())
 		{
-			const UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-			if (IsValid(NavSystem) && NavSystem->ProjectPointToNavigation(point->GetActorLocation(), Location))
+			int index = AIController->GetBlackboardComponent()->GetValueAsInt(patrolIndex.SelectedKeyName);
+			ATargetPoint* point = AIEnemy->patrolPoints[index];
+
+			if (point)
 			{
-				AIController->GetBlackboardComponent()->SetValueAsVector(targetLocation.SelectedKeyName, Location.Location);
-				success = true;
+				const UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+				if (IsValid(NavSystem) && NavSystem->ProjectPointToNavigation(point->GetActorLocation(), Location))
+				{
+					AIController->GetBlackboardComponent()->SetValueAsVector(targetLocation.SelectedKeyName, Location.Location);
+					success = true;
+				}
 			}
+		}
+		else
+		{
+			success = false;
 		}
 	}
 }

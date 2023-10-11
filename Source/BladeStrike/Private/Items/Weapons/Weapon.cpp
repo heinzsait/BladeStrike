@@ -52,7 +52,8 @@ void AWeapon::Equip(USceneComponent* InParent)
 		}
 	}
 
-	ownerActor = InParent->GetOwner();
+	SetOwner(InParent->GetOwner());
+	SetInstigator(Cast<APawn>(InParent->GetOwner()));
 	isAttached = true;
 }
 
@@ -79,7 +80,9 @@ void AWeapon::DropWeapon()
 	SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
 	state = EItemState::Hovering;
 	isAttached = false;
-	ownerActor = nullptr;
+	SetOwner(nullptr);
+	SetInstigator(nullptr);
+	isWeaponEnemy = false;
 }
 
 
@@ -106,7 +109,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 	TArray<AActor*> actorsToIgnore;
 	actorsToIgnore.Add(this);
-	actorsToIgnore.Add(ownerActor);
+	actorsToIgnore.Add(GetOwner());
 	for (AActor* actor : ignoreActors)
 	{
 		actorsToIgnore.AddUnique(actor);
@@ -122,7 +125,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 	if (hitResult.GetActor())
 	{
-		//UGameplayStatics::ApplyDamage(hitResult.GetActor(), weaponDamage, GetInstigatorController(), this, nullptr);
+		UGameplayStatics::ApplyDamage(hitResult.GetActor(), weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
 
 		IHitInterface* hitInterface = Cast<IHitInterface>(hitResult.GetActor());
 		if (hitInterface)

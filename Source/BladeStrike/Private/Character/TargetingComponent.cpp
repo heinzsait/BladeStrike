@@ -97,8 +97,12 @@ void UTargetingComponent::LockTarget()
 }
 
 void UTargetingComponent::UpdateTargetRotation()
-{
-	if (!lockedOnTarget || !character) return;
+{	
+	if (!lockedOnTarget || !character)
+	{
+		return;
+	}
+
 	//if (character->GetCharacterActionState() == ECharacterActions::Dodging) return;
 
 	FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(character->GetActorLocation() + FVector(0.0f, 0.0f, 200.0f), lockedOnTarget->GetActorLocation());
@@ -126,3 +130,13 @@ void UTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	}
 }
 
+void UTargetingComponent::TargetedEnemyDied(AActor* enemy)
+{
+	if (lockedOnTarget == enemy)
+	{
+		//Unlock
+		isLocked = false;
+		lockedOnTarget = nullptr;
+		character->GetStateManagerComponent()->SetCharacterRotationState(ECharacterRotation::Movement);
+	}
+}

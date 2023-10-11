@@ -23,3 +23,9 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		speed = UKismetMathLibrary::VSizeXY(enemyCharacter->GetCharacterMovement()->Velocity);
 	}
 }
+
+void UEnemyAnimInstance::Die()
+{
+	isAlive = false;
+	deathPoseIndex = FMath::RandRange(0, 10);
+}

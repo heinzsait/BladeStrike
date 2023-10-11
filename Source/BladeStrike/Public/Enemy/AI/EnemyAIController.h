@@ -16,6 +16,9 @@ class BLADESTRIKE_API AEnemyAIController : public AAIController
 
 public:
 	AEnemyAIController();
+
+	UFUNCTION()
+	void Die();
 	
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
@@ -24,6 +27,7 @@ protected:
 
 	UFUNCTION()
 	void OnPlayerDetected(const TArray<AActor*>& DetectedPawn);
+
 
 private:
 	class AEnemy* enemy;

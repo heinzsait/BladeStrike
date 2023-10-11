@@ -99,7 +99,4 @@ private:
 	UPROPERTY()
 	bool collisionEnabled;
 
-	UPROPERTY()
-	AActor* ownerActor;
-
 };

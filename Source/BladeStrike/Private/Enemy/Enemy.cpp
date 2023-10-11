@@ -6,10 +6,14 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Enemy/EnemyAnimInstance.h"
+#include "Enemy/AI/EnemyAIController.h"
 #include "Character/MainCharacter.h"
-#include "AIController.h"
 #include "Items/Weapons/Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/AttributeComponent.h"
+#include "HUD/HealthBarComponent.h"
+#include "Perception/AISense_Damage.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -28,6 +32,14 @@ AEnemy::AEnemy()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 
+	attributes = CreateDefaultSubobject<UAttributeComponent>(FName("Attributes"));
+	healthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(FName("HealthBar"));
+	healthBarWidget->SetupAttachment(GetRootComponent());
+}
+
+bool AEnemy::isAlive()
+{
+	return attributes->isAlive();
 }
 
 // Called when the game starts or when spawned
@@ -40,6 +52,12 @@ void AEnemy::BeginPlay()
 	if (mainWeapon)
 	{
 		mainWeapon->Equip(this->GetMesh());
+	}
+
+	if (healthBarWidget)
+	{
+		healthBarWidget->SetHealthPercentage(1.0f);
+		healthBarWidget->SetVisibility(false);
 	}
 }
 
@@ -57,16 +75,39 @@ void AEnemy::RotateTowardsPlayer()
 	SetActorRotation(lerpRot);
 }
 
-// Called to bind functionality to input
-void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
 
 void AEnemy::GetHit(const FVector& impactPoint)
 {
-	DirectionalHitReact(impactPoint);
+	hitImpactPoint = impactPoint;
+	if (isAlive())
+	{
+		DirectionalHitReact(impactPoint);
+		if (healthBarWidget)
+		{
+			healthBarWidget->SetVisibility(true);
+		}
+	}
+	else
+	{
+		Die();
+		if (healthBarWidget)
+		{
+			healthBarWidget->SetVisibility(false);
+		}
+	}
+}
+
+float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (attributes && healthBarWidget)
+	{
+		attributes->ReceiveDamage(DamageAmount);
+		healthBarWidget->SetHealthPercentage(attributes->GetHealthPercent());
+	}
+
+	UAISense_Damage::ReportDamageEvent(this, this, EventInstigator, DamageAmount, EventInstigator->GetPawn()->GetActorLocation(), hitImpactPoint);
+
+	return 0.0f;
 }
 
 void AEnemy::DirectionalHitReact(const FVector& impactPoint)
@@ -94,6 +135,38 @@ void AEnemy::PlayHitReaction(const FName sectionName)
 		GetMesh()->GetAnimInstance()->Montage_Play(hitReactionMontages);
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(sectionName);
 	}
+}
+
+void AEnemy::Die()
+{
+	if (GetMesh()->GetAnimInstance())
+	{
+		UEnemyAnimInstance* _anim = Cast<UEnemyAnimInstance>(GetMesh()->GetAnimInstance());
+		if (_anim)
+		{
+			_anim->Die();
+		}
+	}
+
+	AEnemyAIController* aiC = GetController<AEnemyAIController>();
+	if (aiC)
+	{
+		aiC->Die();
+	}
+
+	if (mainWeapon)
+	{
+		mainWeapon->DropWeapon();
+	}
+
+	if (player)
+	{
+		player->ResetTargetLock(Cast<AActor>(this));
+	}
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetLifeSpan(3.0f);
 }
 
 float AEnemy::PerformAction()
@@ -146,9 +219,4 @@ float AEnemy::PerformAttack()
 }
 
 
-
-//void AEnemy::TakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation, UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser)
-//{
-//
-//}
 

@@ -70,7 +70,12 @@ void UMainCharacterAnimInstance::CalculateStrafeDirection()
 		direction = CalculateDirection(character->GetCharacterMovement()->Velocity, character->GetActorRotation());
 		speed = UKismetMathLibrary::VSizeXY(character->GetCharacterMovement()->Velocity);
 
-		//if (GEngine)
-			//GEngine->AddOnScreenDebugMessage(-1, GetWorld()->DeltaTimeSeconds, FColor::Purple, FString::Printf(TEXT("speed = %d direction = %s") , speed , direction));
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, GetWorld()->DeltaTimeSeconds, FColor::Purple, FString::Printf(TEXT("speed = %f direction = %f") , speed , direction));
+	}
+	else
+	{
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, GetWorld()->DeltaTimeSeconds, FColor::Purple, FString::Printf(TEXT("not camera")));
 	}
 }

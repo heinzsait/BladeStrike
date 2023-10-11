@@ -18,6 +18,7 @@ class BLADESTRIKE_API UEnemyAnimInstance : public UAnimInstance
 
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 
+
 	UPROPERTY()
 	class AEnemy* enemyCharacter;
 
@@ -31,5 +32,13 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	float direction;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool isAlive = true;
+
+	UPROPERTY(BlueprintReadOnly)
+	int deathPoseIndex = 0; 	
 	
+	UFUNCTION()
+	void Die();
 };

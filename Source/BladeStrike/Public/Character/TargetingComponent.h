@@ -19,6 +19,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION()
+	void TargetedEnemyDied(AActor* enemy);
+
+	UFUNCTION()
 	AActor* FindTarget();
 
 	UFUNCTION()

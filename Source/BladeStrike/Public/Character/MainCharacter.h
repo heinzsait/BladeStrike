@@ -84,6 +84,9 @@ public:
 	UFUNCTION()
 	USpringArmComponent* GetCameraBoom();
 
+	UFUNCTION()
+	void ResetTargetLock(AActor* _enemy = nullptr);
+
 	//FORCEINLINE AWeapon* GetMainWeapon() const { return mainWeapon; }
 
 protected:
