@@ -39,9 +39,6 @@ public:
 	bool isSprinting;
 
 	UPROPERTY(BlueprintReadWrite)
-	bool isDodging;
-
-	UPROPERTY(BlueprintReadWrite)
 	float inputX;
 
 	UPROPERTY(BlueprintReadWrite)
@@ -58,6 +55,12 @@ public:
 
 	UFUNCTION()
 	void UnEquipMainWeapon();
+
+	UFUNCTION()
+	void Block();
+
+	UFUNCTION()
+	void UnBlock();
 
 	FORCEINLINE void SetOverlappingItem(AItem* item) { overlappingItem = item; }
 	//FORCEINLINE ECharacterState GetCharacterState() const { return charState; }

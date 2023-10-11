@@ -164,6 +164,8 @@ void AEnemy::Die()
 		player->ResetTargetLock(Cast<AActor>(this));
 	}
 
+	currentState = ECharacterState::Dead;
+
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetLifeSpan(3.0f);

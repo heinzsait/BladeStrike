@@ -46,6 +46,7 @@ enum class ECharacterActions : uint8
 	None UMETA(DisplayName = "None"),
 	Attacking UMETA(DisplayName = "Attacking"),
 	Dodging UMETA(DisplayName = "Dodging"),
+	Blocking UMETA(DisplayName = "Blocking"),
 	GotHit UMETA(DisplayName = "GotHit")
 };
 

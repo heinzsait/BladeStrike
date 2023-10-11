@@ -140,7 +140,7 @@ void AMainCharacter::Sprint(float value)
 
 void AMainCharacter::JumpPressed()
 {
-	if(!animInstance->IsAnyMontagePlaying() && !isDodging)
+	if(!animInstance->IsAnyMontagePlaying())
 		Jump();
 }
 
@@ -229,6 +229,22 @@ void AMainCharacter::UnEquipMainWeapon()
 	}
 }
 
+void AMainCharacter::Block()
+{
+	if (GetCharacterState() == ECharacterState::Unequipped) return;
+	if (!combatComp->GetMainWeapon()) return;
+
+	if (GetCharacterActionState() == ECharacterActions::None)
+	{
+		SetCharacterActionState(ECharacterActions::Blocking);
+	}
+}
+
+void AMainCharacter::UnBlock()
+{
+	SetCharacterActionState(ECharacterActions::None);
+}
+
 void AMainCharacter::SetDirection()
 {
 	FVector v = FVector(inputZ, -inputX, 0);
@@ -289,6 +305,8 @@ void AMainCharacter::Tick(float DeltaTime)
 
 	SetDirection();	
 
+	
+
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Yellow, FString::Printf(TEXT("Action State = %d"), stateManager->GetCharacterActionState()));
@@ -310,6 +328,8 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction(FName("AttackToggle"), IE_Pressed, this, &AMainCharacter::AttackToggle);
 	PlayerInputComponent->BindAction(FName("Dodge"), IE_Pressed, this, &AMainCharacter::Dodge);
 	PlayerInputComponent->BindAction(FName("LockTarget"), IE_Pressed, this, &AMainCharacter::LockTarget);
+	PlayerInputComponent->BindAction(FName("Block"), IE_Pressed, this, &AMainCharacter::Block);
+	PlayerInputComponent->BindAction(FName("Block"), IE_Released, this, &AMainCharacter::UnBlock);
 }
 
 void AMainCharacter::GetHit(const FVector& impactPoint)
@@ -335,7 +355,15 @@ void AMainCharacter::DirectionalHitReact(const FVector& impactPoint)
 	else if (O >= -135.f && O < -45.f)  section = FName("FromLeft");
 	else if (O >= 45.f && O < 135.f)  section = FName("FromRight");
 
-	PlayHitReaction(section);
+	if ((GetCharacterActionState() == ECharacterActions::Blocking) && section == "FromFront")
+	{
+		if(animInstance)
+			animInstance->Montage_Play(combatComp->GetMainWeapon()->blockHitMontage);
+	}
+	else
+	{
+		PlayHitReaction(section);
+	}
 }
 
 void AMainCharacter::PlayHitReaction(const FName sectionName)

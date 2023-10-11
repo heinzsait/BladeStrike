@@ -28,7 +28,8 @@ void UMainCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		rotationState = character->GetRotationState();
 
 		isInAir = movementComp->IsFalling();
-		isDodging = character->isDodging;
+		//isDodging = character->isDodging;
+		isBlocking = (character->GetCharacterActionState() == ECharacterActions::Blocking) ? true:false;
 
 		inputX = character->inputX;
 		inputZ = character->inputZ;

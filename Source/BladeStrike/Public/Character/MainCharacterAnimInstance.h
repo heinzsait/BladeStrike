@@ -56,6 +56,9 @@ public:
 	bool isDodging;
 
 	UPROPERTY(BlueprintReadOnly)
+	bool isBlocking;
+
+	UPROPERTY(BlueprintReadOnly)
 	ECharacterState charState = ECharacterState::Unequipped;
 
 	UPROPERTY(BlueprintReadOnly)

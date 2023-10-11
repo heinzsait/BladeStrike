@@ -59,6 +59,9 @@ public:
 	UAnimMontage* dodgeMontage;
 
 	UPROPERTY(EditAnywhere)
+	UAnimMontage* blockHitMontage;
+
+	UPROPERTY(EditAnywhere)
 	int attackIndex = 0;
 
 	FORCEINLINE void SetCollision(bool flag) { collisionEnabled = flag; }
