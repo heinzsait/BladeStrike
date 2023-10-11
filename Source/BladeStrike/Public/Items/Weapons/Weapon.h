@@ -29,6 +29,9 @@ public:
 	void DropWeapon();
 
 	UPROPERTY(EditAnywhere)
+	float weaponDamage = 10.0f;
+
+	UPROPERTY(EditAnywhere)
 	UAnimMontage* swordDrawMontage;
 
 	UPROPERTY(EditAnywhere)

@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Interfaces/HitInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 AWeapon::AWeapon()
 {
@@ -121,25 +122,13 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 	if (hitResult.GetActor())
 	{
-		if (!isWeaponEnemy)
+		//UGameplayStatics::ApplyDamage(hitResult.GetActor(), weaponDamage, GetInstigatorController(), this, nullptr);
+
+		IHitInterface* hitInterface = Cast<IHitInterface>(hitResult.GetActor());
+		if (hitInterface)
 		{
-			IHitInterface* hitInterface = Cast<IHitInterface>(hitResult.GetActor());
-			if (hitInterface)
-			{
-				hitInterface->GetHit(hitResult.ImpactPoint);
-				ignoreActors.AddUnique(hitResult.GetActor());
-			}
-		}
-		else
-		{
-			/*if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Magenta, FString::Printf(TEXT("Detected Hit")));*/
-			AMainCharacter* player = Cast<AMainCharacter>(hitResult.GetActor());
-			if (player)
-			{
-				player->GetHit(hitResult.ImpactPoint);
-				ignoreActors.AddUnique(hitResult.GetActor());
-			}
+			hitInterface->GetHit(hitResult.ImpactPoint);
+			ignoreActors.AddUnique(hitResult.GetActor());
 		}
 	}
 }

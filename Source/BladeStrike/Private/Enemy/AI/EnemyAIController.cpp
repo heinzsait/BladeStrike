@@ -36,7 +36,7 @@ void AEnemyAIController::BeginPlay()
 
 void AEnemyAIController::OnPlayerDetected(const TArray<AActor*>& DetectedPawn)
 {
-	GetBlackboardComponent()->SetValueAsObject(FName("Target"), nullptr);
+	//GetBlackboardComponent()->SetValueAsObject(FName("Target"), nullptr);
 	for (AActor* actor : DetectedPawn)
 	{
 		FActorPerceptionBlueprintInfo info;

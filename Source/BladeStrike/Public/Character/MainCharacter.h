@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/HitInterface.h"
 #include "EnumClass.h"
 #include "Character/CombatComponent.h"
 #include "Character/StateManagerComponent.h"
@@ -18,7 +19,7 @@ class AWeapon;
 class UTargetingComponent;
 
 UCLASS()
-class BLADESTRIKE_API AMainCharacter : public ACharacter
+class BLADESTRIKE_API AMainCharacter : public ACharacter, public IHitInterface
 {
 	GENERATED_BODY()
 
@@ -29,8 +30,7 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION()
-	void GetHit(const FVector& impactPoint);
+	virtual void GetHit(const FVector& impactPoint) override;
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* hitReactionMontages;
