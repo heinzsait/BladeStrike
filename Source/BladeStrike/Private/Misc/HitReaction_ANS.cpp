@@ -23,7 +23,10 @@ void UHitReaction_ANS::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequence
 	AMainCharacter* character = Cast<AMainCharacter>(MeshComp->GetOwner());
 	if (character)
 	{
-		character->GetStateManagerComponent()->SetCharacterActionState(ECharacterActions::None);
+		if (character->isBlockKeyDown)
+			character->SetCharacterActionState(ECharacterActions::Blocking);
+		else
+			character->SetCharacterActionState(ECharacterActions::None);
 	}
 
 	AEnemy* enemy = Cast<AEnemy>(MeshComp->GetOwner());

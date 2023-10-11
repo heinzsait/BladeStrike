@@ -38,6 +38,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool isSprinting;
 
+	UPROPERTY()
+	bool isBlockKeyDown;
+
 	UPROPERTY(BlueprintReadWrite)
 	float inputX;
 

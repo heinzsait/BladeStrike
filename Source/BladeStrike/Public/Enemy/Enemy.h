@@ -22,6 +22,12 @@ public:
 
 	virtual void GetHit(const FVector& impactPoint) override;
 
+	UFUNCTION()
+	void ShowHealthBar();
+
+	UFUNCTION()
+	void HideHealthBar();
+
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 	
 	UFUNCTION()

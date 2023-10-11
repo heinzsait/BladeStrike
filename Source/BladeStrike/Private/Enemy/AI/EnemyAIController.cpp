@@ -20,10 +20,7 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	enemy = Cast<AEnemy>(InPawn);
 	if (enemy)
 	{
-		bool sucess = RunBehaviorTree(enemy->behaviourTree);
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString("running BT: " + enemy->behaviourTree->GetFName().ToString()));
-		
+		RunBehaviorTree(enemy->behaviourTree);
 	}
 }
 
@@ -41,52 +38,15 @@ void AEnemyAIController::OnPlayerDetected(const TArray<AActor*>& DetectedPawn)
 		FActorPerceptionBlueprintInfo info;
 		perceptionComp->GetActorsPerception(actor, info);
 
-		//AI Sense for Sight...
-		FAIStimulus aiStimuli = info.LastSensedStimuli[0];		
-		if (aiStimuli.WasSuccessfullySensed())
-		{			
-			AMainCharacter* player = Cast<AMainCharacter>(actor);
-			if (player)
-			{
-				GetBlackboardComponent()->SetValueAsObject(FName("Target"), player);
-			}
-			else
-			{
-				AController* _playerC = Cast<AController>(actor);
-				if (_playerC)
-				{
-					AMainCharacter* _player = Cast<AMainCharacter>(_playerC->GetPawn());
-					if (_player)
-					{
-						GetBlackboardComponent()->SetValueAsObject(FName("Target"), _player);
-					}
-				}
-			}
-		}
-		else
+		if (actor->ActorHasTag("Player"))
 		{
-			GetBlackboardComponent()->SetValueAsObject(FName("Target"), nullptr);
-		}
-
-		//AI Sense for Damage....
-		aiStimuli = info.LastSensedStimuli[1];
-		if (aiStimuli.WasSuccessfullySensed())
-		{
-			AMainCharacter* player = Cast<AMainCharacter>(actor);
-			if (player)
+			/*if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString("Sensed actor : " + actor->GetFName().ToString()));*/
+			for (FAIStimulus aiStimuli : info.LastSensedStimuli)
 			{
-				GetBlackboardComponent()->SetValueAsObject(FName("Target"), player);
-			}
-			else
-			{
-				AController* _playerC = Cast<AController>(actor);
-				if (_playerC)
+				if (aiStimuli.WasSuccessfullySensed())
 				{
-					AMainCharacter* _player = Cast<AMainCharacter>(_playerC->GetPawn());
-					if (_player)
-					{
-						GetBlackboardComponent()->SetValueAsObject(FName("Target"), _player);
-					}
+					GetBlackboardComponent()->SetValueAsObject(FName("Target"), actor);
 				}
 			}
 		}

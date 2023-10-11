@@ -46,7 +46,8 @@ bool AEnemy::isAlive()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	Tags.Add(FName("Enemy"));
 	player = Cast<AMainCharacter>(UGameplayStatics::GetActorOfClass(this, AMainCharacter::StaticClass()));
 
 	if (mainWeapon)
@@ -57,7 +58,7 @@ void AEnemy::BeginPlay()
 	if (healthBarWidget)
 	{
 		healthBarWidget->SetHealthPercentage(1.0f);
-		healthBarWidget->SetVisibility(false);
+		HideHealthBar();
 	}
 }
 
@@ -65,7 +66,6 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AEnemy::RotateTowardsPlayer()
@@ -82,18 +82,27 @@ void AEnemy::GetHit(const FVector& impactPoint)
 	if (isAlive())
 	{
 		DirectionalHitReact(impactPoint);
-		if (healthBarWidget)
-		{
-			healthBarWidget->SetVisibility(true);
-		}
 	}
 	else
 	{
 		Die();
-		if (healthBarWidget)
-		{
-			healthBarWidget->SetVisibility(false);
-		}
+		HideHealthBar();
+	}
+}
+
+void AEnemy::ShowHealthBar()
+{
+	if (healthBarWidget)
+	{
+		healthBarWidget->SetVisibility(true);
+	}
+}
+
+void AEnemy::HideHealthBar()
+{
+	if (healthBarWidget)
+	{
+		healthBarWidget->SetVisibility(false);
 	}
 }
 
@@ -105,7 +114,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		healthBarWidget->SetHealthPercentage(attributes->GetHealthPercent());
 	}
 
-	UAISense_Damage::ReportDamageEvent(this, this, EventInstigator, DamageAmount, EventInstigator->GetPawn()->GetActorLocation(), hitImpactPoint);
+	UAISense_Damage::ReportDamageEvent(this, this, EventInstigator->GetPawn(), DamageAmount, EventInstigator->GetPawn()->GetActorLocation(), hitImpactPoint);
 
 	return 0.0f;
 }

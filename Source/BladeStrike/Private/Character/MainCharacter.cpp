@@ -45,7 +45,18 @@ AMainCharacter::AMainCharacter()
 	targetingComp = CreateDefaultSubobject<UTargetingComponent>(FName("Targeting Component"));
 }
 
+// Called when the game starts or when spawned
+void AMainCharacter::BeginPlay()
+{
+	Super::BeginPlay();
 
+	Tags.Add(FName("Player"));
+	Controller.Get()->Tags.Add("Player");
+
+	animInstance = GetMesh()->GetAnimInstance();
+
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
+}
 
 bool AMainCharacter::IsTargetLocked() const
 {
@@ -73,15 +84,7 @@ void AMainCharacter::ResetTargetLock(AActor* _enemy)
 }
 
 
-// Called when the game starts or when spawned
-void AMainCharacter::BeginPlay()
-{
-	Super::BeginPlay();
 
-	animInstance = GetMesh()->GetAnimInstance();
-	
-	AutoPossessPlayer = EAutoReceiveInput::Player0;
-}
 
 void AMainCharacter::MoveForward(float value)
 {
@@ -198,12 +201,6 @@ void AMainCharacter::AttackToggle()
 void AMainCharacter::Dodge()
 {
 	combatComp->PerformDodge();
-	/*if (canDodge)
-	{
-		isDodging = true;
-		canDodge = false;
-		dodgeTimer = 0.0f;
-	}*/
 }
 
 void AMainCharacter::LockTarget()
@@ -231,6 +228,7 @@ void AMainCharacter::UnEquipMainWeapon()
 
 void AMainCharacter::Block()
 {
+	isBlockKeyDown = true;
 	if (GetCharacterState() == ECharacterState::Unequipped) return;
 	if (!combatComp->GetMainWeapon()) return;
 
@@ -242,6 +240,7 @@ void AMainCharacter::Block()
 
 void AMainCharacter::UnBlock()
 {
+	isBlockKeyDown = false;
 	SetCharacterActionState(ECharacterActions::None);
 }
 

@@ -28,6 +28,11 @@ void UDodgeRoll_AN::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 
 void UDodgeRoll_AN::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	if(character)
-		character->SetCharacterActionState(ECharacterActions::None);
+	if (character)
+	{
+		if(character->isBlockKeyDown)
+			character->SetCharacterActionState(ECharacterActions::Blocking);
+		else
+			character->SetCharacterActionState(ECharacterActions::None);
+	}
 }

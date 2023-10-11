@@ -44,6 +44,7 @@ void UUpdateBehaviorBTService::UpdateBehavior()
 			if (targetActor)
 			{
 				//Can see the player...
+				enemy->ShowHealthBar();
 				canSeePlayer = true;
 				float distance = FVector::Distance(enemy->GetActorLocation(), targetActor->GetActorLocation());
 				if (distance <= attackingRange)
@@ -53,8 +54,17 @@ void UUpdateBehaviorBTService::UpdateBehavior()
 				}
 				else
 				{
-					//Player not in range so chase...
-					SetBehavior(EAIBehaviors::Chase);
+					if (distance < loseInterestRange)
+					{
+						//Player not in range so chase...
+						SetBehavior(EAIBehaviors::Chase);
+					}
+					else
+					{
+						//Cannot see the player...
+						SetBehavior(EAIBehaviors::Patrol);
+						enemy->HideHealthBar();
+					}
 				}
 			}
 			else
@@ -73,6 +83,8 @@ void UUpdateBehaviorBTService::UpdateBehavior()
 void UUpdateBehaviorBTService::SetBehavior(EAIBehaviors newBehavior)
 {
 	AIController->GetBlackboardComponent()->SetValueAsEnum(behaviorKey.SelectedKeyName, (uint8)newBehavior);
-	/*if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString("AI state for " + enemy->GetFName().ToString()) + FString::Printf(TEXT(" = %d") ,newBehavior));*/
+	if (newBehavior == EAIBehaviors::Patrol)
+	{
+		AIController->GetBlackboardComponent()->SetValueAsObject(targetKey.SelectedKeyName, nullptr);
+	}
 }

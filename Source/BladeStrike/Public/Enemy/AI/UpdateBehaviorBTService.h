@@ -37,6 +37,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float attackingRange = 500;
 
+	UPROPERTY(EditAnywhere)
+	float loseInterestRange = 1500;
+
 
 private:
 
