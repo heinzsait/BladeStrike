@@ -28,8 +28,14 @@ public:
 	UFUNCTION()
 	void DropWeapon();
 
+	UFUNCTION()
+	AWeapon* Clone();
+
 	UPROPERTY(EditAnywhere)
 	float weaponDamage = 10.0f;
+
+	UPROPERTY(EditAnywhere)
+	bool isOffHanded = false;
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* swordDrawMontage;
@@ -69,6 +75,15 @@ public:
 
 	UPROPERTY()
 	TArray<AActor*> ignoreActors;
+
+	UPROPERTY()
+	AWeapon* offHandPair;
+
+	UPROPERTY()
+	AWeapon* mainHandPair;
+
+	UPROPERTY()
+	bool isAttached = false;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -81,14 +96,18 @@ protected:
 
 private:
 
-	UPROPERTY()
-	bool isAttached = false;
 
 	UPROPERTY(EditAnywhere)
 	FName attachSocket;
 
 	UPROPERTY(EditAnywhere)
 	FName handSocket;
+
+	UPROPERTY(EditAnywhere)
+	FName offHandSocket;
+
+	UPROPERTY(EditAnywhere)
+	FName offHandAttachSocket;
 
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* weaponBox;
@@ -101,5 +120,8 @@ private:
 
 	UPROPERTY()
 	bool collisionEnabled;
+
+	UFUNCTION()
+	void CreateOffHandWeapon(class AMainCharacter* player, USceneComponent* InParent);
 
 };

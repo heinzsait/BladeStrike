@@ -156,6 +156,11 @@ void AMainCharacter::InteractPressed()
 		{
 			combatComp->GetMainWeapon()->DropWeapon();
 		}
+		if (combatComp->GetOffHandWeapon() != nullptr)
+		{
+			combatComp->GetOffHandWeapon()->Destroy();
+			combatComp->SetOffHandWeapon(nullptr);
+		}
 		overlappingWeapon->Equip(this->GetMesh());
 		combatComp->SetMainWeapon(overlappingWeapon);
 
@@ -216,6 +221,11 @@ void AMainCharacter::EquipMainWeapon()
 	{
 		combatComp->GetMainWeapon()->Equip(this->GetMesh());
 	}
+
+	if (combatComp->GetOffHandWeapon())
+	{
+		combatComp->GetOffHandWeapon()->Equip(this->GetMesh());
+	}
 }
 
 void AMainCharacter::UnEquipMainWeapon()
@@ -223,6 +233,11 @@ void AMainCharacter::UnEquipMainWeapon()
 	if (combatComp->GetMainWeapon())
 	{
 		combatComp->GetMainWeapon()->UnEquip(this->GetMesh());
+	}
+
+	if (combatComp->GetOffHandWeapon())
+	{
+		combatComp->GetOffHandWeapon()->UnEquip(this->GetMesh());
 	}
 }
 

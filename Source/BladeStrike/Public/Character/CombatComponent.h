@@ -24,6 +24,9 @@ public:
 	FORCEINLINE AWeapon* GetMainWeapon() const { return mainWeapon; }
 	FORCEINLINE void SetMainWeapon(AWeapon* weapon) { mainWeapon = weapon; }
 
+	FORCEINLINE AWeapon* GetOffHandWeapon() const { return offHandWeapon; }
+	FORCEINLINE void SetOffHandWeapon(AWeapon* weapon) { offHandWeapon = weapon; }
+
 	FORCEINLINE void SaveAttack() { attackSaved = true; }
 	FORCEINLINE void ResetSavedAttack() { attackSaved = false; }
 	FORCEINLINE bool GetSavedAttack() const { return attackSaved; }
@@ -63,6 +66,9 @@ private:
 
 	UPROPERTY()
 	AWeapon* mainWeapon;
+
+	UPROPERTY()
+	AWeapon* offHandWeapon;
 
 	UPROPERTY()
 	bool attackSaved;

@@ -37,7 +37,8 @@ enum class ECombatTypes : uint8
 {
 	None UMETA(DisplayName = "None"),
 	LightSword UMETA(DisplayName = "Light Sword"),
-	HeavySword UMETA(DisplayName = "Heavy Sword")
+	HeavySword UMETA(DisplayName = "Heavy Sword"),
+	DualSword UMETA(DisplayName = "Dual Sword")
 };
 
 UENUM(BlueprintType)

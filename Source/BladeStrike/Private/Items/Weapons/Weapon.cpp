@@ -11,7 +11,11 @@
 AWeapon::AWeapon()
 {
 	handSocket = FName("RightHandSocket");
+	offHandSocket = FName("LeftHandSocket");
+	
 	attachSocket = FName("SwordHipSocket");
+	offHandAttachSocket = FName("SwordHipSocket");
+
 	combatType = ECombatTypes::LightSword;
 	isAttached = false;
 
@@ -21,7 +25,6 @@ AWeapon::AWeapon()
 	weaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	weaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 	weaponBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	//weaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
 	traceStart = CreateDefaultSubobject<USceneComponent>(FName("Weapon Box Trace Start"));
 	traceStart->SetupAttachment(GetRootComponent());
@@ -40,8 +43,16 @@ void AWeapon::BeginPlay()
 void AWeapon::Equip(USceneComponent* InParent)
 {
 	FAttachmentTransformRules transformRules(EAttachmentRule::SnapToTarget, true);
-	ItemMesh->AttachToComponent(InParent, transformRules, handSocket);
+	if(!isOffHanded)
+		ItemMesh->AttachToComponent(InParent, transformRules, handSocket);
+	else
+		ItemMesh->AttachToComponent(InParent, transformRules, offHandSocket);
+
+
 	state = EItemState::Equipped;
+	SetOwner(InParent->GetOwner());
+	SetInstigator(Cast<APawn>(InParent->GetOwner()));
+	isAttached = true;
 
 	if (!isWeaponEnemy)
 	{
@@ -49,18 +60,24 @@ void AWeapon::Equip(USceneComponent* InParent)
 		if (player)
 		{
 			player->SetCombatState(combatType);
+			if (combatType == ECombatTypes::DualSword)
+			{	
+				if (!isOffHanded)
+				{
+					CreateOffHandWeapon(player, InParent);
+				}
+			}
 		}
 	}
-
-	SetOwner(InParent->GetOwner());
-	SetInstigator(Cast<APawn>(InParent->GetOwner()));
-	isAttached = true;
 }
 
 void AWeapon::UnEquip(USceneComponent* InParent)
 {
 	FAttachmentTransformRules transformRules(EAttachmentRule::SnapToTarget, true);
-	ItemMesh->AttachToComponent(InParent, transformRules, attachSocket);
+	if(!isOffHanded)
+		ItemMesh->AttachToComponent(InParent, transformRules, attachSocket);
+	else
+		ItemMesh->AttachToComponent(InParent, transformRules, offHandAttachSocket);
 	state = EItemState::Unequipped;
 
 	if (!isWeaponEnemy)
@@ -70,6 +87,29 @@ void AWeapon::UnEquip(USceneComponent* InParent)
 		{
 			player->SetCombatState(ECombatTypes::None);
 		}
+	}
+}
+
+void AWeapon::CreateOffHandWeapon(AMainCharacter* player, USceneComponent* InParent)
+{
+	if (player->GetCombatComponent()->GetOffHandWeapon() == nullptr)
+	{
+		//Create copy of this weapon to off hand...
+		AWeapon* offHandWeapon = Clone();
+
+		offHandWeapon->isOffHanded = true;
+		FAttachmentTransformRules _transformRules(EAttachmentRule::SnapToTarget, true);
+		offHandWeapon->ItemMesh->AttachToComponent(InParent, _transformRules, offHandSocket);
+		offHandWeapon->state = EItemState::Equipped;
+
+		offHandWeapon->SetOwner(InParent->GetOwner());
+		offHandWeapon->SetInstigator(Cast<APawn>(InParent->GetOwner()));
+		offHandWeapon->isAttached = true;
+
+		offHandPair = offHandWeapon;
+		offHandWeapon->mainHandPair = this;
+
+		player->GetCombatComponent()->SetOffHandWeapon(offHandWeapon);
 	}
 }
 
@@ -83,6 +123,19 @@ void AWeapon::DropWeapon()
 	SetOwner(nullptr);
 	SetInstigator(nullptr);
 	isWeaponEnemy = false;
+
+	offHandPair = nullptr;
+}
+
+class AWeapon* AWeapon::Clone()
+{
+	FActorSpawnParameters Parameters;
+	Parameters.Template = this;
+
+	AWeapon* weapon = GetWorld()->SpawnActor<AWeapon>(GetClass(), Parameters);
+	weapon->SetOwner(GetOwner());
+
+	return weapon;
 }
 
 
@@ -101,9 +154,6 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	if (!collisionEnabled) return;
 	
-	/*if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Magenta, FString::Printf(TEXT("Detected Overlap")));*/
-
 	const FVector start = traceStart->GetComponentLocation();
 	const FVector end = traceEnd->GetComponentLocation();
 
@@ -121,8 +171,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	ObjectTypesArray.Emplace(ECollisionChannel::ECC_Pawn);
 
 	UKismetSystemLibrary::SphereTraceSingleForObjects(this, start, end, 10.0f, ObjectTypesArray, false, actorsToIgnore, EDrawDebugTrace::None, hitResult, true);
-	//UKismetSystemLibrary::BoxTraceSingle(this, start, end, FVector::OneVector * 5.0f, traceStart->GetComponentRotation(), ETraceTypeQuery::, false, actorsToIgnore, EDrawDebugTrace::None, hitResult, true);
-
+	
 	if (hitResult.GetActor())
 	{
 		UGameplayStatics::ApplyDamage(hitResult.GetActor(), weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
