@@ -21,7 +21,7 @@ void UDodgeRoll_AN::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 	{
 		dodgeDir = character->GetCombatComponent()->GetDodgeDirection();
 		character->SetActorRotation(
-			UKismetMathLibrary::RInterpTo_Constant(character->GetActorRotation(), dodgeDir, FrameDeltaTime, 360.0f)
+			UKismetMathLibrary::RInterpTo_Constant(character->GetActorRotation(), dodgeDir, FrameDeltaTime, 720.0f)
 			);
 	}
 }
