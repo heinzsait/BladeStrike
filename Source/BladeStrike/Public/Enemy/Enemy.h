@@ -16,6 +16,7 @@ class BLADESTRIKE_API AEnemy : public ACharacter, public IHitInterface
 public:
 	AEnemy();
 	virtual void Tick(float DeltaTime) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	UFUNCTION()
 	void RotateTowardsPlayer();

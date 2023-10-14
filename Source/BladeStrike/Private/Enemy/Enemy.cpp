@@ -68,6 +68,21 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (mainWeapon)
+	{
+		mainWeapon->DropWeapon();
+		if (offHandWeapon != nullptr)
+		{
+			offHandWeapon->Destroy();
+			offHandWeapon = nullptr;
+		}
+	}
+}
+
 void AEnemy::RotateTowardsPlayer()
 {
 	FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), player->GetActorLocation());
@@ -161,17 +176,7 @@ void AEnemy::Die()
 	if (aiC)
 	{
 		aiC->Die();
-	}
-
-	if (mainWeapon)
-	{
-		mainWeapon->DropWeapon();
-		if (offHandWeapon != nullptr)
-		{
-			offHandWeapon->Destroy();
-			offHandWeapon = nullptr;
-		}
-	}
+	}	
 
 	if (player)
 	{
