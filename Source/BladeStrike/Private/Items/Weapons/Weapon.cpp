@@ -3,6 +3,7 @@
 
 #include "Items/Weapons/Weapon.h"
 #include "Character/MainCharacter.h"
+#include "Enemy/Enemy.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Interfaces/HitInterface.h"
@@ -69,6 +70,20 @@ void AWeapon::Equip(USceneComponent* InParent)
 			}
 		}
 	}
+	else
+	{
+		if (combatType == ECombatTypes::DualSword)
+		{
+			AEnemy* enemy = Cast<AEnemy>(InParent->GetOwner());
+			if (enemy)
+			{
+				if (!isOffHanded)
+				{
+					CreateOffHandWeapon_Enemy(enemy, InParent);
+				}
+			}
+		}
+	}
 }
 
 void AWeapon::UnEquip(USceneComponent* InParent)
@@ -110,6 +125,30 @@ void AWeapon::CreateOffHandWeapon(AMainCharacter* player, USceneComponent* InPar
 		offHandWeapon->mainHandPair = this;
 
 		player->GetCombatComponent()->SetOffHandWeapon(offHandWeapon);
+	}
+}
+
+void AWeapon::CreateOffHandWeapon_Enemy(AEnemy* enemy, USceneComponent* InParent)
+{
+	if (enemy->offHandWeapon == nullptr)
+	{
+		//Create copy of this weapon to off hand...
+		AWeapon* offHandWeapon = Clone();
+
+		offHandWeapon->isOffHanded = true;
+		FAttachmentTransformRules _transformRules(EAttachmentRule::SnapToTarget, true);
+		offHandWeapon->ItemMesh->AttachToComponent(InParent, _transformRules, offHandSocket);
+		offHandWeapon->state = EItemState::Equipped;
+
+		offHandWeapon->SetOwner(InParent->GetOwner());
+		offHandWeapon->SetInstigator(Cast<APawn>(InParent->GetOwner()));
+		offHandWeapon->isAttached = true;
+		offHandWeapon->isWeaponEnemy = true;
+
+		offHandPair = offHandWeapon;
+		offHandWeapon->mainHandPair = this;
+
+		enemy->offHandWeapon = offHandWeapon;
 	}
 }
 
@@ -173,19 +212,21 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	UKismetSystemLibrary::SphereTraceSingleForObjects(this, start, end, 10.0f, ObjectTypesArray, false, actorsToIgnore, EDrawDebugTrace::None, hitResult, true);
 	
 	if (hitResult.GetActor())
-	{
-		UGameplayStatics::ApplyDamage(hitResult.GetActor(), weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
-
+	{	
 		IHitInterface* hitInterface = Cast<IHitInterface>(hitResult.GetActor());
 		if (hitInterface)
 		{
 			if (isWeaponEnemy)
 			{
-				if(hitResult.GetActor()->ActorHasTag(FName("Player")))
+				if (hitResult.GetActor()->ActorHasTag(FName("Player")))
+				{
+					UGameplayStatics::ApplyDamage(hitResult.GetActor(), weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
 					hitInterface->GetHit(hitResult.ImpactPoint);
+				}
 			}
 			else
 			{
+				UGameplayStatics::ApplyDamage(hitResult.GetActor(), weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
 				hitInterface->GetHit(hitResult.ImpactPoint);
 			}
 			ignoreActors.AddUnique(hitResult.GetActor());

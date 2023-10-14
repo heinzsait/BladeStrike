@@ -124,4 +124,7 @@ private:
 	UFUNCTION()
 	void CreateOffHandWeapon(class AMainCharacter* player, USceneComponent* InParent);
 
+	UFUNCTION()
+	void CreateOffHandWeapon_Enemy(class AEnemy* enemy, USceneComponent* InParent);
+
 };

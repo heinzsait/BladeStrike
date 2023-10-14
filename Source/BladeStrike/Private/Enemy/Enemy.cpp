@@ -166,6 +166,11 @@ void AEnemy::Die()
 	if (mainWeapon)
 	{
 		mainWeapon->DropWeapon();
+		if (offHandWeapon != nullptr)
+		{
+			offHandWeapon->Destroy();
+			offHandWeapon = nullptr;
+		}
 	}
 
 	if (player)

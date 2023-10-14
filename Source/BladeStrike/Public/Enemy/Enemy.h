@@ -37,7 +37,10 @@ public:
 	class UBehaviorTree* behaviourTree;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class AWeapon* mainWeapon;
+	class AWeapon* mainWeapon; 
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class AWeapon* offHandWeapon;
 	
 	UPROPERTY(EditAnywhere)
 	ECharacterState currentState = ECharacterState::Unequipped;
