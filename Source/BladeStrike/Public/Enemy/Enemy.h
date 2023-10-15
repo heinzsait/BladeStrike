@@ -32,7 +32,7 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 	
 	UFUNCTION()
-	float PerformAction();
+	float PerformAction(EAIAttackType _attackType = EAIAttackType::Default);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBehaviorTree* behaviourTree;
@@ -50,10 +50,25 @@ public:
 	ECharacterActions actionState = ECharacterActions::None;
 
 	UPROPERTY(EditAnywhere)
+	EAIAttackType attackType = EAIAttackType::Default;
+
+	UPROPERTY(EditAnywhere)
 	TArray<class ATargetPoint*> patrolPoints;
 
 	UFUNCTION()
 	bool isAlive();
+
+	UFUNCTION()
+	FVector GetTranslationWrapTarget();
+
+	UFUNCTION()
+	FRotator GetRotationWrapTarget();
+
+	UFUNCTION()
+	void UpdateMotionWrapping();
+
+	UPROPERTY(EditAnywhere)
+	float wrapTargetDistance = 75.0f;
 
 protected:
 	virtual void BeginPlay() override;
@@ -63,7 +78,7 @@ private:
 	
 
 	UFUNCTION()
-	float PerformAttack();
+	float PerformAttack(EAIAttackType _attackType = EAIAttackType::Default);
 
 	UFUNCTION()
 	void DirectionalHitReact(const FVector& impactPoint);
@@ -86,10 +101,21 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	class UHealthBarComponent* healthBarWidget;
+
+	UPROPERTY()
+	class UMotionWarpingComponent* motionWrapComp;
 	
 	UPROPERTY()
 	FVector hitImpactPoint;
 	
 
-	
+	//For Boss
+	UPROPERTY(EditAnywhere, category = "Boss")
+	TArray<UAnimMontage*> closeRangeAttacks;
+
+	UPROPERTY(EditAnywhere, category = "Boss")
+	TArray<UAnimMontage*> mediumRangeAttacks;
+
+	UPROPERTY(EditAnywhere, category = "Boss")
+	TArray<UAnimMontage*> longRangeAttacks;
 };

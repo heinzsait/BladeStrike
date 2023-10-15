@@ -93,8 +93,6 @@ public:
 	UFUNCTION()
 	void ResetTargetLock(AActor* _enemy = nullptr);
 
-	//FORCEINLINE AWeapon* GetMainWeapon() const { return mainWeapon; }
-
 protected:
 	virtual void BeginPlay() override;
 

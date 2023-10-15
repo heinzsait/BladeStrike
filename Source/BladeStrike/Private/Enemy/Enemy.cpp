@@ -14,6 +14,7 @@
 #include "Components/AttributeComponent.h"
 #include "HUD/HealthBarComponent.h"
 #include "Perception/AISense_Damage.h"
+#include "MotionWarpingComponent.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -35,6 +36,8 @@ AEnemy::AEnemy()
 	attributes = CreateDefaultSubobject<UAttributeComponent>(FName("Attributes"));
 	healthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(FName("HealthBar"));
 	healthBarWidget->SetupAttachment(GetRootComponent());
+
+	motionWrapComp = CreateDefaultSubobject<UMotionWarpingComponent>(FName("Motion Wrapping"));
 }
 
 bool AEnemy::isAlive()
@@ -66,6 +69,8 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UpdateMotionWrapping();
 }
 
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -190,7 +195,7 @@ void AEnemy::Die()
 	SetLifeSpan(3.0f);
 }
 
-float AEnemy::PerformAction()
+float AEnemy::PerformAction(EAIAttackType _attackType)
 {
 	float duration = 0.0f;
 
@@ -204,7 +209,7 @@ float AEnemy::PerformAction()
 		break;
 
 	case ECharacterActions::Attacking:
-		duration = PerformAttack();
+		duration = PerformAttack(_attackType);
 		break;
 
 	case ECharacterActions::Dodging:
@@ -218,26 +223,96 @@ float AEnemy::PerformAction()
 	return duration;
 }
 
-float AEnemy::PerformAttack()
+float AEnemy::PerformAttack(EAIAttackType _attackType)
 {
 	float duration = 0.0f;
 	if (GetMesh()->GetAnimInstance())
 	{
 		if (!GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
 		{
-			if (mainWeapon)
+			UAnimMontage* attackMontageToPlay = nullptr;
+			switch (_attackType)
 			{
-				int index = FMath::RandRange(0, mainWeapon->attackMontages.Num() - 1);
-				if (mainWeapon->attackMontages[index])
+
+			case EAIAttackType::Default:
+				if (mainWeapon)
 				{
-					GetMesh()->GetAnimInstance()->Montage_Play(mainWeapon->attackMontages[index]);
-					duration = mainWeapon->attackMontages[index]->GetPlayLength();
+					int index = FMath::RandRange(0, mainWeapon->attackMontages.Num() - 1);
+					if (mainWeapon->attackMontages[index])
+						attackMontageToPlay = mainWeapon->attackMontages[index];
 				}
+				break;
+
+			case EAIAttackType::CloseRange:
+				if (closeRangeAttacks.Num() > 0)
+				{
+					int index = FMath::RandRange(0, closeRangeAttacks.Num() - 1);
+					if (closeRangeAttacks[index])
+						attackMontageToPlay = closeRangeAttacks[index];
+				}
+				break;
+
+			case EAIAttackType::MediumRange:
+				if (mediumRangeAttacks.Num() > 0)
+				{
+					int index = FMath::RandRange(0, mediumRangeAttacks.Num() - 1);
+					if (mediumRangeAttacks[index])
+						attackMontageToPlay = mediumRangeAttacks[index];
+				}
+				break;
+
+			case EAIAttackType::LongRange:
+				if (longRangeAttacks.Num() > 0)
+				{
+					int index = FMath::RandRange(0, longRangeAttacks.Num() - 1);
+					if (longRangeAttacks[index])
+						attackMontageToPlay = longRangeAttacks[index];
+				}
+				break;
+
+			default:
+				if (mainWeapon)
+				{
+					int index = FMath::RandRange(0, mainWeapon->attackMontages.Num() - 1);
+					if (mainWeapon->attackMontages[index])
+						attackMontageToPlay = mainWeapon->attackMontages[index];
+				}
+				break;
+
+			}
+
+			if (attackMontageToPlay)
+			{
+				GetMesh()->GetAnimInstance()->Montage_Play(attackMontageToPlay);
+				duration = attackMontageToPlay->GetPlayLength();
 			}
 		}
 	}
 	return duration;
 }
 
+FRotator AEnemy::GetRotationWrapTarget()
+{
+	if (player)
+	{
+		return (player->GetActorRotation());
+	}
+	return FRotator();
+}
 
 
+FVector AEnemy::GetTranslationWrapTarget()
+{
+	if(!player)
+		return FVector();
+
+	return (player->GetActorLocation() + (((GetActorLocation() - player->GetActorLocation()).GetSafeNormal()) * wrapTargetDistance));
+}
+
+
+void AEnemy::UpdateMotionWrapping()
+{
+	if (!player) return;
+
+	motionWrapComp->AddOrUpdateWarpTargetFromLocationAndRotation(FName("WrapTarget"), GetTranslationWrapTarget(), GetRotationWrapTarget());
+}

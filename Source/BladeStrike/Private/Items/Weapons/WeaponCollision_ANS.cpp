@@ -14,22 +14,31 @@ void UWeaponCollision_ANS::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSe
 	if (character)
 	{
 		character->GetCombatComponent()->GetMainWeapon()->SetCollision(true);
+		if (character->GetCombatComponent()->GetOffHandWeapon())
+		{
+			character->GetCombatComponent()->GetOffHandWeapon()->SetCollision(true);
+		}
 	}
 
 	AEnemy* enemy = Cast<AEnemy>(MeshComp->GetOwner());
 	if (enemy)
 	{
 		enemy->mainWeapon->SetCollision(true);
+
+		if (enemy->offHandWeapon)
+		{
+			enemy->offHandWeapon->SetCollision(true);
+		}
 	}
 }
 
 void UWeaponCollision_ANS::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
 {
-	AEnemy* enemy = Cast<AEnemy>(MeshComp->GetOwner());
+	/*AEnemy* enemy = Cast<AEnemy>(MeshComp->GetOwner());
 	if (enemy)
 	{
 		enemy->RotateTowardsPlayer();
-	}
+	}*/
 }
 
 void UWeaponCollision_ANS::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
@@ -39,6 +48,11 @@ void UWeaponCollision_ANS::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequ
 	{
 		character->GetCombatComponent()->GetMainWeapon()->SetCollision(false);
 		character->GetCombatComponent()->GetMainWeapon()->ignoreActors.Empty();
+		if (character->GetCombatComponent()->GetOffHandWeapon())
+		{
+			character->GetCombatComponent()->GetOffHandWeapon()->SetCollision(false);
+			character->GetCombatComponent()->GetOffHandWeapon()->ignoreActors.Empty();
+		}
 	}
 
 	AEnemy* enemy = Cast<AEnemy>(MeshComp->GetOwner());
@@ -46,5 +60,11 @@ void UWeaponCollision_ANS::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequ
 	{
 		enemy->mainWeapon->SetCollision(false);
 		enemy->mainWeapon->ignoreActors.Empty();
+
+		if (enemy->offHandWeapon)
+		{
+			enemy->offHandWeapon->SetCollision(true);
+			enemy->offHandWeapon->ignoreActors.Empty();
+		}
 	}
 }

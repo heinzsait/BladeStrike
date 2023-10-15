@@ -23,6 +23,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector actionDuration;
 
+	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector attackType;
+
 private:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual FString GetStaticDescription() const override;

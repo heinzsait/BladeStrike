@@ -10,7 +10,7 @@ public class BladeStrike : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG" });
 
-        PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "NavigationSystem" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "NavigationSystem", "MotionWarping" });
 
         PrivateDependencyModuleNames.AddRange(new string[] {  });
 

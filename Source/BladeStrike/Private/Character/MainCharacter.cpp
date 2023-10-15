@@ -83,9 +83,6 @@ void AMainCharacter::ResetTargetLock(AActor* _enemy)
 	targetingComp->TargetedEnemyDied(_enemy);
 }
 
-
-
-
 void AMainCharacter::MoveForward(float value)
 {
 	inputZ = value * 2; 

@@ -68,3 +68,12 @@ enum class EAIBehaviors : uint8
 	Attack UMETA(DisplayName = "Attack"),
 	Hit UMETA(DisplayName = "Hit")
 };
+
+UENUM(BlueprintType)
+enum class EAIAttackType : uint8
+{
+	Default UMETA(DisplayName = "Default"),
+	CloseRange UMETA(DisplayName = "CloseRange"),
+	MediumRange UMETA(DisplayName = "MediumRange"),
+	LongRange UMETA(DisplayName = "LongRange")
+};

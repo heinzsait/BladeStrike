@@ -23,7 +23,8 @@ EBTNodeResult::Type UPerformActionBTTaskNode::ExecuteTask(UBehaviorTreeComponent
 	if (AIEnemy)
 	{
 		AIEnemy->actionState = actionToPerform;
-		float duration = AIEnemy->PerformAction();
+		auto _attackTypeEnum = AIController->GetBlackboardComponent()->GetValueAsEnum(attackType.SelectedKeyName);
+		float duration = AIEnemy->PerformAction((EAIAttackType)_attackTypeEnum);
 		AIController->GetBlackboardComponent()->SetValueAsFloat(actionDuration.SelectedKeyName, duration);
 		success = true;
 	}
