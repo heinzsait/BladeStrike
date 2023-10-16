@@ -80,6 +80,9 @@ private:
 	UFUNCTION()
 	float PerformAttack(EAIAttackType _attackType = EAIAttackType::Default);
 
+	UPROPERTY()
+	EAIAttackType currentAttackType;
+
 	UFUNCTION()
 	void DirectionalHitReact(const FVector& impactPoint);
 

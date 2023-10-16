@@ -88,6 +88,8 @@ void UCombatComponent::SelectNextAttack()
 
 void UCombatComponent::PerformDodge()
 {
+	if (character->GetCharacterActionState() == ECharacterActions::Attacking || character->GetCharacterActionState() == ECharacterActions::GotHit) return;
+
 	UAnimMontage* _dodgeMontage = nullptr;
 	if (character->GetCharacterState() == ECharacterState::Equipped)
 	{

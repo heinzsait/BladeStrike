@@ -91,6 +91,7 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AEnemy::RotateTowardsPlayer()
 {
 	FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), player->GetActorLocation());
+	targetRot = FRotator(GetActorRotation().Pitch, targetRot.Yaw, GetActorRotation().Roll);
 	auto lerpRot = FMath::RInterpTo(GetActorRotation(), targetRot, GetWorld()->DeltaTimeSeconds, 360);
 	SetActorRotation(lerpRot);
 }
@@ -226,6 +227,7 @@ float AEnemy::PerformAction(EAIAttackType _attackType)
 float AEnemy::PerformAttack(EAIAttackType _attackType)
 {
 	float duration = 0.0f;
+	currentAttackType = _attackType;
 	if (GetMesh()->GetAnimInstance())
 	{
 		if (!GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
@@ -287,6 +289,7 @@ float AEnemy::PerformAttack(EAIAttackType _attackType)
 				duration = attackMontageToPlay->GetPlayLength();
 			}
 		}
+		else return - 1;
 	}
 	return duration;
 }
@@ -306,7 +309,15 @@ FVector AEnemy::GetTranslationWrapTarget()
 	if(!player)
 		return FVector();
 
+
+	//float distance = FVector::Distance(player->GetActorLocation(), GetActorLocation());
+	//float wrapDistance = wrapTargetDistance - distance;
+	//wrapDistance = FMath::Clamp(wrapDistance, 0, wrapTargetDistance);
+	//wrapDistance = FMath::Abs(wrapDistance);
+
 	return (player->GetActorLocation() + (((GetActorLocation() - player->GetActorLocation()).GetSafeNormal()) * wrapTargetDistance));
+	//FVector targetPos = (player->GetActorLocation() + (((GetActorLocation() - player->GetActorLocation()).GetSafeNormal()))).GetSafeNormal();
+	//return (GetActorLocation());
 }
 
 
