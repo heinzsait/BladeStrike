@@ -168,6 +168,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoom;
 
+	UPROPERTY()
+	APlayerController* playerController;
+
 	UFUNCTION()
 	void SetDirection();
 
@@ -206,4 +209,6 @@ private:
 
 	UFUNCTION()
 	void Die();
+
+
 };

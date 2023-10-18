@@ -13,11 +13,30 @@ UCLASS()
 class BLADESTRIKE_API UMainOverlay : public UUserWidget
 {
 	GENERATED_BODY()
+protected:
+	virtual void NativeConstruct() override;
 
 public:
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* healthBar;
 
+	UPROPERTY(meta = (BindWidget))
+	class UCanvasPanel* YouDiedCanvas;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* RetryButton;
+
 	UFUNCTION()
 	void SetHealthPercentage(float hp);
+
+	UFUNCTION()
+	void ShowYouDied();
+
+	UFUNCTION()
+	void HideYouDied();
+
+private:
+
+	UFUNCTION()
+	void OnRetryClicked();
 };

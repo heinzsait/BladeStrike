@@ -4,7 +4,6 @@
 #include "Character/MainCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Components/TimelineComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Items/Weapons/Weapon.h"
@@ -67,10 +66,10 @@ void AMainCharacter::BeginPlay()
 
 void AMainCharacter::InitializeMainOverlay()
 {
-	APlayerController* controller = Cast<APlayerController>(GetController());
-	if (controller)
+	playerController = Cast<APlayerController>(GetController());
+	if (playerController)
 	{
-		AMainHUD* mainHUD = Cast<AMainHUD>(controller->GetHUD());
+		AMainHUD* mainHUD = Cast<AMainHUD>(playerController->GetHUD());
 		if (mainHUD)
 		{
 			mainOverlay = mainHUD->GetOverlay();
@@ -335,23 +334,7 @@ void AMainCharacter::SetDirection()
 	else
 	{
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, rotspeed, 0.0f);
-	}
-
-	/*
-	if (CurveFloatReset)
-	{
-		FOnTimelineFloat TimelineProgress;
-		TimelineProgress.BindUFunction(this, FName("TimelineProgressReset"));
-		CurveTimelineReset.AddInterpFloat(CurveFloatReset, TimelineProgress);
-
-		startRot = FVector(0, 0, 350);
-		endRot = FVector(0, 0, 50);
-
-		CurveTimelineReset.PlayFromStart();
 	}	
-	*/
-	
-	
 }
 
 
@@ -364,13 +347,12 @@ void AMainCharacter::Tick(float DeltaTime)
 
 	if (GetCharacterState() == ECharacterState::Dead) return;
 
-
 	SetDirection();	
 
-	if (GEngine)
+	/*if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Yellow, FString::Printf(TEXT("Action State = %d"), stateManager->GetCharacterActionState()));
-	}
+	}*/
 }
 
 // Called to bind functionality to input
@@ -474,5 +456,15 @@ void AMainCharacter::Die()
 	if (animInstance)
 	{
 		animInstance->Die();
+	}
+
+
+	if (mainOverlay)
+	{
+		mainOverlay->ShowYouDied();
+
+		playerController->bShowMouseCursor = true;
+		playerController->bEnableClickEvents = true;
+		playerController->bEnableMouseOverEvents = true;
 	}
 }
