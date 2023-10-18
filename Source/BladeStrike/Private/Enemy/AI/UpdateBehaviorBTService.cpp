@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnumClass.h"
+#include "Components/AttributeComponent.h"
 
 UUpdateBehaviorBTService::UUpdateBehaviorBTService(const FObjectInitializer& ObjectInitializer)	: Super(ObjectInitializer)
 {
@@ -66,11 +67,28 @@ void UUpdateBehaviorBTService::UpdateBehavior()
 						enemy->HideHealthBar();
 					}
 				}
+
+				if (targetActor->GetComponentByClass<UAttributeComponent>())
+				{
+					if (!targetActor->GetComponentByClass<UAttributeComponent>()->isAlive())
+					{
+						//Player Dead...
+						SetBehavior(EAIBehaviors::Patrol);
+						enemy->HideHealthBar();
+
+						//playerDead = true;
+					}
+				}
 			}
 			else
 			{
 				//Cannot see the player...
 				SetBehavior(EAIBehaviors::Patrol);
+			}
+
+			if (enemy->GetMesh()->GetAnimInstance())
+			{
+				AIController->GetBlackboardComponent()->SetValueAsBool(isAnyMontagePlayingKey.SelectedKeyName, enemy->GetMesh()->GetAnimInstance()->IsAnyMontagePlaying());
 			}
 		}
 		else

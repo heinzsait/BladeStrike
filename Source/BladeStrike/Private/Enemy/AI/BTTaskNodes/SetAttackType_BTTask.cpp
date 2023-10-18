@@ -50,8 +50,9 @@ EBTNodeResult::Type USetAttackType_BTTask::ExecuteTask(UBehaviorTreeComponent& O
 			AIController->GetBlackboardComponent()->SetValueAsEnum(attackType.SelectedKeyName, (uint8)_attackType);
 			success = true;
 		}
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, .5f, FColor::Purple, FString::Printf(TEXT("Distance = %f"), distance));
+
+		/*if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, .5f, FColor::Purple, FString::Printf(TEXT("Distance = %f"), distance));*/
 	}
 
 	if (success)

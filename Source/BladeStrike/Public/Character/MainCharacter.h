@@ -93,8 +93,14 @@ public:
 	UFUNCTION()
 	void ResetTargetLock(AActor* _enemy = nullptr);
 
+	UFUNCTION()
+	bool isAlive();
+
 protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void InitializeMainOverlay();
 
 	UFUNCTION()
 	void MoveForward(float value);
@@ -172,7 +178,7 @@ private:
 	//ECharacterState charState = ECharacterState::Unequipped;
 
 	UPROPERTY()
-	UAnimInstance* animInstance;
+	class UMainCharacterAnimInstance* animInstance;
 
 	UPROPERTY(EditAnywhere)
 	UCombatComponent* combatComp;
@@ -183,10 +189,21 @@ private:
 	UPROPERTY()
 	UTargetingComponent* targetingComp;
 
+	UPROPERTY(EditAnywhere)
+	class UAttributeComponent* attributes;
+
+	UPROPERTY()
+	class UMainOverlay* mainOverlay;
 
 	UFUNCTION()
 	void DirectionalHitReact(const FVector& impactPoint);
 
 	UFUNCTION()
 	void PlayHitReaction(const FName sectionName);
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+
+
+	UFUNCTION()
+	void Die();
 };

@@ -31,10 +31,10 @@ protected:
 private:
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float health;
+	float health = 100;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float maxHealth;
+	float maxHealth = 100;
 
 		
 };

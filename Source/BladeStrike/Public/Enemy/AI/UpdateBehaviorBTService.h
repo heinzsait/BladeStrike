@@ -35,6 +35,9 @@ public:
 	FBlackboardKeySelector targetKey;
 
 	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector isAnyMontagePlayingKey;
+
+	UPROPERTY(EditAnywhere)
 	float attackingRange = 500;
 
 	UPROPERTY(EditAnywhere)
@@ -51,4 +54,7 @@ private:
 
 	UPROPERTY()
 	bool canSeePlayer;
+
+	UPROPERTY()
+	bool playerDead;
 };

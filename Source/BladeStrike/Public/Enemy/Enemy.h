@@ -109,8 +109,7 @@ private:
 	class UMotionWarpingComponent* motionWrapComp;
 	
 	UPROPERTY()
-	FVector hitImpactPoint;
-	
+	FVector hitImpactPoint;	
 
 	//For Boss
 	UPROPERTY(EditAnywhere, category = "Boss")

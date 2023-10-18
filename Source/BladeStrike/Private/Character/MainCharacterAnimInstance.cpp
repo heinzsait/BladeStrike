@@ -72,3 +72,9 @@ void UMainCharacterAnimInstance::CalculateStrafeDirection()
 		speed = UKismetMathLibrary::VSizeXY(character->GetCharacterMovement()->Velocity);
 	}
 }
+
+void UMainCharacterAnimInstance::Die()
+{
+	isAlive = false;
+	deathPoseIndex = FMath::RandRange(0, 10);
+}

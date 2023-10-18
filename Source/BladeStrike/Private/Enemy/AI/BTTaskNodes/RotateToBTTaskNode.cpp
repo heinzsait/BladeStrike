@@ -4,12 +4,12 @@
 #include "Enemy/AI/BTTaskNodes/RotateToBTTaskNode.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Enemy/Enemy.h"
 #include "Kismet/KismetMathLibrary.h"
 
 URotateToBTTaskNode::URotateToBTTaskNode()
 {
 	NodeName = TEXT("Rotate to target");
+	bNotifyTick = true;
 }
 
 EBTNodeResult::Type URotateToBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -17,23 +17,17 @@ EBTNodeResult::Type URotateToBTTaskNode::ExecuteTask(UBehaviorTreeComponent& Own
 	AIController = OwnerComp.GetAIOwner();
 
 	if (AIController)
-		AIEnemy = Cast<AEnemy>(AIController->GetCharacter());
+		AIActor = Cast<AActor>(AIController->GetPawn());
 
 	targetActor = Cast<AActor>(AIController->GetBlackboardComponent()->GetValueAsObject(target.SelectedKeyName));
 
-	bool success = false;
-
-	if (AIEnemy && targetActor)
+	if (AIActor && targetActor)
 	{
-		auto targetRot = UKismetMathLibrary::FindLookAtRotation(AIEnemy->GetActorLocation(), targetActor->GetActorLocation());
-		AIEnemy->SetActorRotation(targetRot);
-		success = true;
-	}
+		targetRot = UKismetMathLibrary::FindLookAtRotation(AIActor->GetActorLocation(), targetActor->GetActorLocation());
+		targetRot = FRotator(AIActor->GetActorRotation().Pitch, targetRot.Yaw, AIActor->GetActorRotation().Roll);
 
-	if (success)
-	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		return EBTNodeResult::Succeeded;
+		FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);
+		return EBTNodeResult::InProgress;
 	}
 	else
 	{
@@ -45,7 +39,24 @@ EBTNodeResult::Type URotateToBTTaskNode::ExecuteTask(UBehaviorTreeComponent& Own
 	}
 }
 
+void URotateToBTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+{
+	Super::TickTask(OwnerComp,  NodeMemory, DeltaSeconds);
+
+	if (AIActor && targetActor)
+	{
+		auto lerpRot = FMath::RInterpTo(AIActor->GetActorRotation(), targetRot, GetWorld()->DeltaTimeSeconds, 15);
+		AIActor->SetActorRotation(lerpRot);
+
+		if (targetRot.Equals(AIActor->GetActorRotation(), 1.0f))
+		{
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		}
+	}
+}
+
 FString URotateToBTTaskNode::GetStaticDescription() const
 {
 	return FString("Rotate to target: " + target.SelectedKeyName.ToString());
 }
+

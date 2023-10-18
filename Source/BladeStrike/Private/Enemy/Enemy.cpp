@@ -45,6 +45,7 @@ bool AEnemy::isAlive()
 	return attributes->isAlive();
 }
 
+
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
@@ -95,7 +96,6 @@ void AEnemy::RotateTowardsPlayer()
 	auto lerpRot = FMath::RInterpTo(GetActorRotation(), targetRot, GetWorld()->DeltaTimeSeconds, 360);
 	SetActorRotation(lerpRot);
 }
-
 
 void AEnemy::GetHit(const FVector& impactPoint)
 {

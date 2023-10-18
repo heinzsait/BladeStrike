@@ -8,7 +8,11 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Items/Weapons/Weapon.h"
+#include "Character/MainCharacterAnimInstance.h"
 #include "Character/TargetingComponent.h"
+#include "Components/AttributeComponent.h"
+#include "HUD/MainHUD.h"
+#include "HUD/MainOverlay.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -43,6 +47,7 @@ AMainCharacter::AMainCharacter()
 	combatComp = CreateDefaultSubobject<UCombatComponent>(FName("Combat Component"));
 	stateManager = CreateDefaultSubobject<UStateManagerComponent>(FName("State Manager Component"));
 	targetingComp = CreateDefaultSubobject<UTargetingComponent>(FName("Targeting Component"));
+	attributes = CreateDefaultSubobject<UAttributeComponent>(FName("Attributes"));
 }
 
 // Called when the game starts or when spawned
@@ -53,9 +58,28 @@ void AMainCharacter::BeginPlay()
 	Tags.Add(FName("Player"));
 	Controller.Get()->Tags.Add("Player");
 
-	animInstance = GetMesh()->GetAnimInstance();
+	animInstance = Cast<UMainCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
+	InitializeMainOverlay();
+}
+
+void AMainCharacter::InitializeMainOverlay()
+{
+	APlayerController* controller = Cast<APlayerController>(GetController());
+	if (controller)
+	{
+		AMainHUD* mainHUD = Cast<AMainHUD>(controller->GetHUD());
+		if (mainHUD)
+		{
+			mainOverlay = mainHUD->GetOverlay();
+			if (mainOverlay && attributes)
+			{
+				mainOverlay->SetHealthPercentage(attributes->GetHealthPercent());
+			}
+		}
+	}
 }
 
 bool AMainCharacter::IsTargetLocked() const
@@ -85,6 +109,8 @@ void AMainCharacter::ResetTargetLock(AActor* _enemy)
 
 void AMainCharacter::MoveForward(float value)
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	inputZ = value * 2; 
 
 	if (Controller && inputZ != 0)
@@ -95,10 +121,10 @@ void AMainCharacter::MoveForward(float value)
 
 }
 
-
-
 void AMainCharacter::MoveRight(float value)
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	inputX = value * 2;
 
 	if (Controller && inputX != 0)
@@ -111,6 +137,8 @@ void AMainCharacter::MoveRight(float value)
 
 void AMainCharacter::Turn(float value)
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	if (Controller && value != 0)
 	{	
 		if(stateManager->GetCharacterRotationState() == ECharacterRotation::Movement)
@@ -120,6 +148,8 @@ void AMainCharacter::Turn(float value)
 
 void AMainCharacter::LookUp(float value)
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	if (Controller && value != 0)
 	{
 		AddControllerPitchInput(value);
@@ -128,6 +158,8 @@ void AMainCharacter::LookUp(float value)
 
 void AMainCharacter::Sprint(float value)
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	if (value > 0.5f)
 	{
 		isSprinting = true;
@@ -140,12 +172,16 @@ void AMainCharacter::Sprint(float value)
 
 void AMainCharacter::JumpPressed()
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	if(!animInstance->IsAnyMontagePlaying())
 		Jump();
 }
 
 void AMainCharacter::InteractPressed()
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	AWeapon* overlappingWeapon = Cast<AWeapon>(overlappingItem);
 	if (overlappingWeapon)
 	{
@@ -168,6 +204,8 @@ void AMainCharacter::InteractPressed()
 
 void AMainCharacter::Attack()
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	if (GetCharacterState() == ECharacterState::Unequipped) return;
 	if (!combatComp->GetMainWeapon()) return;
 
@@ -179,6 +217,8 @@ void AMainCharacter::Attack()
 
 void AMainCharacter::AttackToggle()
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	if (!combatComp->GetMainWeapon()) return;
 
 	if (GetCharacterState() == ECharacterState::Unequipped)
@@ -202,11 +242,15 @@ void AMainCharacter::AttackToggle()
 
 void AMainCharacter::Dodge()
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	combatComp->PerformDodge();
 }
 
 void AMainCharacter::LockTarget()
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	if(GetCharacterState() == ECharacterState::Equipped)
 		targetingComp->LockTarget();
 }
@@ -240,6 +284,8 @@ void AMainCharacter::UnEquipMainWeapon()
 
 void AMainCharacter::Block()
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	isBlockKeyDown = true;
 	if (GetCharacterState() == ECharacterState::Unequipped) return;
 	if (!combatComp->GetMainWeapon()) return;
@@ -252,6 +298,8 @@ void AMainCharacter::Block()
 
 void AMainCharacter::UnBlock()
 {
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
 	isBlockKeyDown = false;
 	SetCharacterActionState(ECharacterActions::None);
 }
@@ -314,9 +362,10 @@ void AMainCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetDirection();	
+	if (GetCharacterState() == ECharacterState::Dead) return;
 
-	
+
+	SetDirection();	
 
 	if (GEngine)
 	{
@@ -346,9 +395,17 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void AMainCharacter::GetHit(const FVector& impactPoint)
 {
 	if (stateManager->GetCharacterActionState() == ECharacterActions::Dodging) return;
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::Printf(TEXT("Player Got Hit")));
-	DirectionalHitReact(impactPoint);
+	/*if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::Printf(TEXT("Player Got Hit")));*/
+
+	if (isAlive())
+	{
+		DirectionalHitReact(impactPoint);
+	}
+	else
+	{
+		Die();
+	}
 }
 
 void AMainCharacter::DirectionalHitReact(const FVector& impactPoint)
@@ -384,5 +441,38 @@ void AMainCharacter::PlayHitReaction(const FName sectionName)
 		GetMesh()->GetAnimInstance()->Montage_Play(hitReactionMontages);
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(sectionName);
 		stateManager->SetCharacterActionState(ECharacterActions::GotHit);
+	}
+}
+
+float AMainCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (attributes)
+	{
+		attributes->ReceiveDamage(DamageAmount);
+
+		if (mainOverlay)
+		{
+			mainOverlay->SetHealthPercentage(attributes->GetHealthPercent());
+		}
+	}
+	return 0.0f;
+}
+
+
+bool AMainCharacter::isAlive()
+{
+	return attributes->isAlive();
+}
+
+void AMainCharacter::Die()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Player Dead...")));
+
+	SetCharacterState(ECharacterState::Dead);
+
+	if (animInstance)
+	{
+		animInstance->Die();
 	}
 }

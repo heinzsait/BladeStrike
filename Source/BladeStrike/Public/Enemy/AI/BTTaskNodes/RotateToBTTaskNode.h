@@ -25,14 +25,18 @@ public:
 private:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual FString GetStaticDescription() const override;
+	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 	UPROPERTY()
-	class AEnemy* AIEnemy;
+	class AActor* AIActor;
 
 	UPROPERTY()
 	class AAIController* AIController;
 
 	UPROPERTY()
 	AActor* targetActor;
+
+	UPROPERTY()
+	FRotator targetRot;
 	
 };

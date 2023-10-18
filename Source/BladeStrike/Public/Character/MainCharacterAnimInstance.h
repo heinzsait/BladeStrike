@@ -67,6 +67,15 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	ECharacterRotation rotationState = ECharacterRotation::Movement;
 
+	UFUNCTION()
+	void Die();
+
+	UPROPERTY(BlueprintReadOnly)
+	bool isAlive = true;
+
+	UPROPERTY(BlueprintReadOnly)
+	int deathPoseIndex = 0;
+
 private:
 
 	UFUNCTION()
