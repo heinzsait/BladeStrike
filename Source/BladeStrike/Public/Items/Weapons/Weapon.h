@@ -53,6 +53,9 @@ public:
 	TArray<UAnimMontage*> heavyAttackMontages;
 
 	UPROPERTY(EditAnywhere)
+	TArray<UAnimMontage*> comboAttackMontages;
+
+	UPROPERTY(EditAnywhere)
 	TArray<UAnimMontage*> fallingAttackMontages;
 
 	UPROPERTY(EditAnywhere)

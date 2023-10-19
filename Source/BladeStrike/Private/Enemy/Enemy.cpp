@@ -278,9 +278,9 @@ float AEnemy::PerformAttack(EAIAttackType _attackType)
 			case EAIAttackType::Default:
 				if (mainWeapon)
 				{
-					int index = FMath::RandRange(0, mainWeapon->attackMontages.Num() - 1);
-					if (mainWeapon->attackMontages[index])
-						attackMontageToPlay = mainWeapon->attackMontages[index];
+					int index = FMath::RandRange(0, mainWeapon->comboAttackMontages.Num() - 1);
+					if (mainWeapon->comboAttackMontages[index])
+						attackMontageToPlay = mainWeapon->comboAttackMontages[index];
 				}
 				break;
 
@@ -314,9 +314,9 @@ float AEnemy::PerformAttack(EAIAttackType _attackType)
 			default:
 				if (mainWeapon)
 				{
-					int index = FMath::RandRange(0, mainWeapon->attackMontages.Num() - 1);
-					if (mainWeapon->attackMontages[index])
-						attackMontageToPlay = mainWeapon->attackMontages[index];
+					int index = FMath::RandRange(0, mainWeapon->comboAttackMontages.Num() - 1);
+					if (mainWeapon->comboAttackMontages[index])
+						attackMontageToPlay = mainWeapon->comboAttackMontages[index];
 				}
 				break;
 
