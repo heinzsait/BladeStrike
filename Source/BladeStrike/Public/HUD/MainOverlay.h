@@ -24,6 +24,9 @@ public:
 	class UProgressBar* staminaBar;
 
 	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* bossHealthBar;
+
+	UPROPERTY(meta = (BindWidget))
 	class UCanvasPanel* YouDiedCanvas;
 
 	UPROPERTY(meta = (BindWidget))
@@ -34,6 +37,15 @@ public:
 
 	UFUNCTION()
 	void SetStaminaPercentage(float stamina);
+
+	UFUNCTION()
+	void SetBossHealthPercentage(float hp);
+
+	UFUNCTION()
+	void ShowBossHealth();
+
+	UFUNCTION()
+	void HideBossHealth();
 
 	UFUNCTION()
 	void ShowYouDied();

@@ -17,6 +17,8 @@ class UCurveFloat;
 class AItem;
 class AWeapon;
 class UTargetingComponent;
+class UMainOverlay;
+class UAttributeComponent;
 
 UCLASS()
 class BLADESTRIKE_API AMainCharacter : public ACharacter, public IHitInterface
@@ -77,6 +79,9 @@ public:
 	FORCEINLINE void SetCharacterState(ECharacterState state) { stateManager->SetCurrentCharacterState(state); }
 
 	FORCEINLINE ECharacterRotation GetRotationState() const { return stateManager->GetCharacterRotationState(); }
+
+	UFUNCTION()
+	UMainOverlay* GetMainOverlay();
 
 	UFUNCTION()
 	bool IsTargetLocked() const;
@@ -193,10 +198,10 @@ private:
 	UTargetingComponent* targetingComp;
 
 	UPROPERTY(EditAnywhere)
-	class UAttributeComponent* attributes;
+	UAttributeComponent* attributes;
 
 	UPROPERTY()
-	class UMainOverlay* mainOverlay;
+	UMainOverlay* mainOverlay;
 
 	UFUNCTION()
 	void DirectionalHitReact(const FVector& impactPoint);
@@ -209,6 +214,5 @@ private:
 
 	UFUNCTION()
 	void Die();
-
 
 };

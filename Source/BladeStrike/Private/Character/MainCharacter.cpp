@@ -81,6 +81,11 @@ void AMainCharacter::InitializeMainOverlay()
 	}
 }
 
+UMainOverlay* AMainCharacter::GetMainOverlay()
+{
+	return mainOverlay;
+}
+
 bool AMainCharacter::IsTargetLocked() const
 {
 	return targetingComp->IsLocked(); 

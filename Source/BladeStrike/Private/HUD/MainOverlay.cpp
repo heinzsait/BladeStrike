@@ -23,6 +23,21 @@ void UMainOverlay::SetStaminaPercentage(float stamina)
 	staminaBar->SetPercent(stamina);
 }
 
+void UMainOverlay::SetBossHealthPercentage(float hp)
+{
+	bossHealthBar->SetPercent(hp);
+}
+
+void UMainOverlay::ShowBossHealth()
+{
+	bossHealthBar->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UMainOverlay::HideBossHealth()
+{
+	bossHealthBar->SetVisibility(ESlateVisibility::Hidden);
+}
+
 void UMainOverlay::ShowYouDied()
 {
 	YouDiedCanvas->SetVisibility(ESlateVisibility::Visible);

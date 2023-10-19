@@ -15,6 +15,7 @@
 #include "HUD/HealthBarComponent.h"
 #include "Perception/AISense_Damage.h"
 #include "MotionWarpingComponent.h"
+#include "HUD/MainOverlay.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -59,10 +60,20 @@ void AEnemy::BeginPlay()
 		mainWeapon->Equip(this->GetMesh());
 	}
 
-	if (healthBarWidget)
+	if (!isBoss)
 	{
-		healthBarWidget->SetHealthPercentage(1.0f);
-		HideHealthBar();
+		if (healthBarWidget)
+		{
+			healthBarWidget->SetHealthPercentage(1.0f);
+			healthBarWidget->SetVisibility(false);
+		}
+	}
+	else
+	{
+		if (player && player->GetMainOverlay())
+		{
+			player->GetMainOverlay()->SetBossHealthPercentage(attributes->GetHealthPercent());
+		}
 	}
 }
 
@@ -113,17 +124,37 @@ void AEnemy::GetHit(const FVector& impactPoint)
 
 void AEnemy::ShowHealthBar()
 {
-	if (healthBarWidget)
+	if (!isBoss)
 	{
-		healthBarWidget->SetVisibility(true);
+		if (healthBarWidget)
+		{
+			healthBarWidget->SetVisibility(true);
+		}
+	}
+	else
+	{
+		if (player && player->GetMainOverlay())
+		{
+			player->GetMainOverlay()->ShowBossHealth();
+		}
 	}
 }
 
 void AEnemy::HideHealthBar()
 {
-	if (healthBarWidget)
+	if (!isBoss)
 	{
-		healthBarWidget->SetVisibility(false);
+		if (healthBarWidget)
+		{
+			healthBarWidget->SetVisibility(false);
+		}
+	}
+	else
+	{
+		if (player && player->GetMainOverlay())
+		{
+			player->GetMainOverlay()->HideBossHealth();
+		}
 	}
 }
 
@@ -132,7 +163,17 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	if (attributes && healthBarWidget)
 	{
 		attributes->ReceiveDamage(DamageAmount);
-		healthBarWidget->SetHealthPercentage(attributes->GetHealthPercent());
+		if (!isBoss)
+		{
+			healthBarWidget->SetHealthPercentage(attributes->GetHealthPercent());
+		}
+		else
+		{
+			if (player && player->GetMainOverlay())
+			{
+				player->GetMainOverlay()->SetBossHealthPercentage(attributes->GetHealthPercent());
+			}
+		}
 	}
 
 	UAISense_Damage::ReportDamageEvent(this, this, EventInstigator->GetPawn(), DamageAmount, EventInstigator->GetPawn()->GetActorLocation(), hitImpactPoint);

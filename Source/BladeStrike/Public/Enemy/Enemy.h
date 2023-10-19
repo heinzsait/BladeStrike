@@ -29,6 +29,9 @@ public:
 	UFUNCTION()
 	void HideHealthBar();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool isBoss = false;
+
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 	
 	UFUNCTION()
