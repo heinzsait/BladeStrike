@@ -159,9 +159,10 @@ void AMainCharacter::Sprint(float value)
 {
 	if (GetCharacterState() == ECharacterState::Dead) return;
 
-	if (value > 0.5f)
+	if (value > 0.5f && attributes && attributes->HasSprintStamina())
 	{
 		isSprinting = true;
+		attributes->UseStaminaSprint();
 	}
 	else
 	{
@@ -242,8 +243,11 @@ void AMainCharacter::AttackToggle()
 void AMainCharacter::Dodge()
 {
 	if (GetCharacterState() == ECharacterState::Dead) return;
-
-	combatComp->PerformDodge();
+	if (attributes && attributes->HasDodgeStamina())
+	{
+		combatComp->PerformDodge();
+		attributes->UseStaminaDodge();
+	}
 }
 
 void AMainCharacter::LockTarget()
@@ -348,6 +352,15 @@ void AMainCharacter::Tick(float DeltaTime)
 	if (GetCharacterState() == ECharacterState::Dead) return;
 
 	SetDirection();	
+
+	if (attributes)
+	{
+		attributes->RegenStamina(DeltaTime);
+		if (mainOverlay)
+		{
+			mainOverlay->SetStaminaPercentage(attributes->GetStaminaPercent());
+		}
+	}
 
 	/*if (GEngine)
 	{

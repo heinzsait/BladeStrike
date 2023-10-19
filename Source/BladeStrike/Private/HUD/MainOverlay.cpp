@@ -18,6 +18,11 @@ void UMainOverlay::SetHealthPercentage(float hp)
 	healthBar->SetPercent(hp);
 }
 
+void UMainOverlay::SetStaminaPercentage(float stamina)
+{
+	staminaBar->SetPercent(stamina);
+}
+
 void UMainOverlay::ShowYouDied()
 {
 	YouDiedCanvas->SetVisibility(ESlateVisibility::Visible);

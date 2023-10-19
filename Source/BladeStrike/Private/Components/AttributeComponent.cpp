@@ -8,7 +8,7 @@ UAttributeComponent::UAttributeComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
 }
@@ -41,12 +41,32 @@ bool UAttributeComponent::isAlive()
 		return true;
 }
 
-
-// Called every frame
-void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+float UAttributeComponent::GetStaminaPercent()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	return (stamina / maxStamina);
 }
 
+bool UAttributeComponent::HasDodgeStamina()
+{
+	return (stamina > dodgeCost);
+}
+
+void UAttributeComponent::UseStaminaDodge()
+{
+	stamina = FMath::Clamp(stamina - dodgeCost, 0, maxStamina);
+}
+
+void UAttributeComponent::UseStaminaSprint()
+{
+	stamina = FMath::Clamp(stamina - sprintCost * GetWorld()->DeltaTimeSeconds, 0, maxStamina);
+}
+
+bool UAttributeComponent::HasSprintStamina()
+{
+	return (stamina > (sprintCost * GetWorld()->DeltaTimeSeconds));
+}
+
+void UAttributeComponent::RegenStamina(float deltaTime)
+{
+	stamina = FMath::Clamp(stamina + staminaRegenRate * deltaTime, 0, maxStamina);
+}

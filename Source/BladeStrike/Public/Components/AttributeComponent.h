@@ -14,7 +14,6 @@ class BLADESTRIKE_API UAttributeComponent : public UActorComponent
 
 public:	
 	UAttributeComponent();
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION()
 	void ReceiveDamage(float dmg);
@@ -24,6 +23,24 @@ public:
 
 	UFUNCTION()
 	bool isAlive();
+
+	UFUNCTION()
+	float GetStaminaPercent();
+
+	UFUNCTION()
+	bool HasDodgeStamina();
+
+	UFUNCTION()
+	void UseStaminaDodge();
+
+	UFUNCTION()
+	void UseStaminaSprint();
+
+	UFUNCTION()
+	bool HasSprintStamina();
+
+	UFUNCTION()
+	void RegenStamina(float deltaTime);
 
 protected:
 	virtual void BeginPlay() override;
@@ -36,5 +53,18 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float maxHealth = 100;
 
-		
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float stamina = 100;
+
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float maxStamina = 100;
+
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float staminaRegenRate = 5;
+
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float dodgeCost = 20;
+
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float sprintCost = 7;
 };
