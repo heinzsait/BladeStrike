@@ -60,19 +60,17 @@ void AEnemy::BeginPlay()
 		mainWeapon->Equip(this->GetMesh());
 	}
 
-	if (!isBoss)
+	if (healthBarWidget)
 	{
-		if (healthBarWidget)
-		{
-			healthBarWidget->SetHealthPercentage(1.0f);
-			healthBarWidget->SetVisibility(false);
-		}
+		healthBarWidget->SetHealthPercentage(1.0f);
+		healthBarWidget->SetVisibility(false);
 	}
-	else
+
+	if (isBoss)
 	{
 		if (player && player->GetMainOverlay())
 		{
-			player->GetMainOverlay()->SetBossHealthPercentage(attributes->GetHealthPercent());
+			player->GetMainOverlay()->SetBossHealthPercentage(1.0f);
 		}
 	}
 }

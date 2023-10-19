@@ -215,4 +215,7 @@ private:
 	UFUNCTION()
 	void Die();
 
+	UPROPERTY()
+	bool isDead = false;
+
 };

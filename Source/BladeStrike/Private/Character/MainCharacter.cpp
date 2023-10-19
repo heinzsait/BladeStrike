@@ -367,6 +367,11 @@ void AMainCharacter::Tick(float DeltaTime)
 		}
 	}
 
+	if (!isAlive() && !isDead)
+	{
+		Die();
+	}
+
 	/*if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Yellow, FString::Printf(TEXT("Action State = %d"), stateManager->GetCharacterActionState()));
@@ -466,8 +471,7 @@ bool AMainCharacter::isAlive()
 
 void AMainCharacter::Die()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Player Dead...")));
+	isDead = true;
 
 	SetCharacterState(ECharacterState::Dead);
 
