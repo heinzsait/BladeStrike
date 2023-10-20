@@ -222,13 +222,18 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 				{
 					UGameplayStatics::ApplyDamage(hitResult.GetActor(), weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
 					hitInterface->GetHit(hitResult.ImpactPoint);
+					if (hitParticlesEnemy && GetWorld())
+						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), hitParticlesEnemy, hitResult.ImpactPoint);
 				}
 			}
 			else
 			{
 				UGameplayStatics::ApplyDamage(hitResult.GetActor(), weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
 				hitInterface->GetHit(hitResult.ImpactPoint);
+				if (hitParticles && GetWorld())
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), hitParticles, hitResult.ImpactPoint);
 			}
+
 			ignoreActors.AddUnique(hitResult.GetActor());
 		}
 	}

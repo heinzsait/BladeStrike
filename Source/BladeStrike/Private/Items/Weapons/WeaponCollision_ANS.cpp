@@ -63,7 +63,7 @@ void UWeaponCollision_ANS::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequ
 
 		if (enemy->offHandWeapon)
 		{
-			enemy->offHandWeapon->SetCollision(true);
+			enemy->offHandWeapon->SetCollision(false);
 			enemy->offHandWeapon->ignoreActors.Empty();
 		}
 	}

@@ -71,6 +71,12 @@ public:
 	UAnimMontage* blockHitMontage;
 
 	UPROPERTY(EditAnywhere)
+	UParticleSystem* hitParticles;
+
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* hitParticlesEnemy;
+
+	UPROPERTY(EditAnywhere)
 	int attackIndex = 0;
 
 	FORCEINLINE void SetCollision(bool flag) { collisionEnabled = flag; }
