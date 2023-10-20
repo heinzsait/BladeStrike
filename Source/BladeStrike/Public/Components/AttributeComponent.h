@@ -42,6 +42,12 @@ public:
 	UFUNCTION()
 	void RegenStamina(float deltaTime);
 
+	UFUNCTION()
+	void Heal(float hp);
+
+	UFUNCTION()
+	bool CanHeal();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -67,4 +73,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float sprintCost = 7;
+
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	int healPotionCount = 2;
 };

@@ -61,11 +61,8 @@ public:
 	UFUNCTION()
 	void UnEquipMainWeapon();
 
-	UFUNCTION()
-	void Block();
-
-	UFUNCTION()
-	void UnBlock();
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* healMontage;
 
 	FORCEINLINE void SetOverlappingItem(AItem* item) { overlappingItem = item; }
 	//FORCEINLINE ECharacterState GetCharacterState() const { return charState; }
@@ -79,6 +76,7 @@ public:
 	FORCEINLINE void SetCharacterState(ECharacterState state) { stateManager->SetCurrentCharacterState(state); }
 
 	FORCEINLINE ECharacterRotation GetRotationState() const { return stateManager->GetCharacterRotationState(); }
+	FORCEINLINE UAttributeComponent* GetAttributesComponent() const { return attributes; }
 
 	UFUNCTION()
 	UMainOverlay* GetMainOverlay();
@@ -126,6 +124,9 @@ protected:
 	void JumpPressed();
 
 	UFUNCTION()
+	bool PlayerCanJump();
+
+	UFUNCTION()
 	void InteractPressed();
 
 	UFUNCTION()
@@ -140,6 +141,14 @@ protected:
 	UFUNCTION()
 	void LockTarget();
 
+	UFUNCTION()
+	void Block();
+
+	UFUNCTION()
+	void UnBlock();
+
+	UFUNCTION()
+	void Heal();
 
 	UPROPERTY()
 	FTimeline CurveTimeline;
@@ -211,11 +220,9 @@ private:
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
-
 	UFUNCTION()
 	void Die();
 
 	UPROPERTY()
 	bool isDead = false;
-
 };

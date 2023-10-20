@@ -48,7 +48,8 @@ enum class ECharacterActions : uint8
 	Attacking UMETA(DisplayName = "Attacking"),
 	Dodging UMETA(DisplayName = "Dodging"),
 	Blocking UMETA(DisplayName = "Blocking"),
-	GotHit UMETA(DisplayName = "GotHit")
+	GotHit UMETA(DisplayName = "GotHit"),
+	Healing UMETA(DisplayName = "Healing")
 };
 
 UENUM(BlueprintType)

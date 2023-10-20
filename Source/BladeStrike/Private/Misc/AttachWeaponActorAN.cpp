@@ -9,25 +9,17 @@ void UAttachWeaponActorAN::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 {
 	if (attachToHand)
 	{
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, FString("Attaching to hand"));
 		AMainCharacter* character = Cast<AMainCharacter>(MeshComp->GetOwner());
 		if (character)
 		{
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, FString("got char"));
 			character->EquipMainWeapon();
 		}
 	}
 	else
 	{
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, FString("Attaching to body"));
 		AMainCharacter* character = Cast<AMainCharacter>(MeshComp->GetOwner());
 		if (character)
 		{
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, FString("got char"));
 			character->UnEquipMainWeapon();
 		}
 	}

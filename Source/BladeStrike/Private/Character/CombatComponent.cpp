@@ -4,6 +4,7 @@
 #include "Character/CombatComponent.h"
 #include "Character/MainCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/AttributeComponent.h"
 #include "Items/Weapons/Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -114,7 +115,12 @@ void UCombatComponent::SelectNextAttack()
 
 void UCombatComponent::PerformDodge()
 {
-	if (character->GetCharacterActionState() == ECharacterActions::Attacking || character->GetCharacterActionState() == ECharacterActions::GotHit) return;
+	if (character->GetCharacterActionState() == ECharacterActions::Attacking ||
+		character->GetCharacterActionState() == ECharacterActions::GotHit ||
+		character->GetCharacterActionState() == ECharacterActions::Healing)
+	{
+		return;
+	}
 
 	UAnimMontage* _dodgeMontage = nullptr;
 	if (character->GetCharacterState() == ECharacterState::Equipped)
@@ -136,6 +142,7 @@ void UCombatComponent::PerformDodge()
 		{
 			animInstance->Montage_Play(_dodgeMontage);
 			character->SetCharacterActionState(ECharacterActions::Dodging);
+			character->GetAttributesComponent()->UseStaminaDodge();
 		}
 	}
 }

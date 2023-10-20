@@ -213,6 +213,7 @@ void AEnemy::Die()
 		UEnemyAnimInstance* _anim = Cast<UEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 		if (_anim)
 		{
+			_anim->StopAllMontages(0.1f);
 			_anim->Die();
 		}
 	}

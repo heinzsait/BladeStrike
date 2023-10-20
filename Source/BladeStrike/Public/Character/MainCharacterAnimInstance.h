@@ -37,6 +37,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool isMoving;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool canJump = true;
+
 	UPROPERTY(BlueprintReadOnly)
 	bool receivedInitialDirection;
 

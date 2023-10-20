@@ -179,11 +179,16 @@ void AMainCharacter::JumpPressed()
 {
 	if (GetCharacterState() == ECharacterState::Dead) return;
 
-	if (!animInstance->IsAnyMontagePlaying())
+	if (PlayerCanJump())
 	{
 		combatComp->ResetWeapon();
 		Jump();
 	}
+}
+
+bool AMainCharacter::PlayerCanJump()
+{
+	return (!animInstance->IsAnyMontagePlaying() && animInstance->canJump);
 }
 
 void AMainCharacter::InteractPressed()
@@ -254,7 +259,6 @@ void AMainCharacter::Dodge()
 	if (attributes && attributes->HasDodgeStamina())
 	{
 		combatComp->PerformDodge();
-		attributes->UseStaminaDodge();
 	}
 }
 
@@ -313,6 +317,26 @@ void AMainCharacter::UnBlock()
 
 	isBlockKeyDown = false;
 	SetCharacterActionState(ECharacterActions::None);
+}
+
+void AMainCharacter::Heal()
+{
+	if (attributes && attributes->CanHeal() && GetCharacterActionState() == ECharacterActions::None && 
+		!(GetCharacterMovement()->IsFalling() || GetCharacterMovement()->IsFlying()))
+	{
+		if (animInstance && healMontage)
+		{
+			animInstance->Montage_Play(healMontage);			
+			attributes->Heal(50.0f);
+
+			if (mainOverlay)
+			{
+				mainOverlay->SetHealthPercentage(attributes->GetHealthPercent());
+			}
+
+			SetCharacterActionState(ECharacterActions::Healing);
+		}
+	}
 }
 
 void AMainCharacter::SetDirection()
@@ -398,6 +422,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction(FName("LockTarget"), IE_Pressed, this, &AMainCharacter::LockTarget);
 	PlayerInputComponent->BindAction(FName("Block"), IE_Pressed, this, &AMainCharacter::Block);
 	PlayerInputComponent->BindAction(FName("Block"), IE_Released, this, &AMainCharacter::UnBlock);
+	PlayerInputComponent->BindAction(FName("Heal"), IE_Released, this, &AMainCharacter::Heal);
 }
 
 void AMainCharacter::GetHit(const FVector& impactPoint)

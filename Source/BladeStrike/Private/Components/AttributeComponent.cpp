@@ -70,3 +70,14 @@ void UAttributeComponent::RegenStamina(float deltaTime)
 {
 	stamina = FMath::Clamp(stamina + staminaRegenRate * deltaTime, 0, maxStamina);
 }
+
+void UAttributeComponent::Heal(float hp)
+{
+	healPotionCount--;
+	health = FMath::Clamp(health + hp, 0.0f, maxHealth);
+}
+
+bool UAttributeComponent::CanHeal()
+{
+	return (healPotionCount > 0);
+}

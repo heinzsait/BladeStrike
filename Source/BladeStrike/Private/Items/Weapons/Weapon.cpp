@@ -220,10 +220,17 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 			{
 				if (hitResult.GetActor()->ActorHasTag(FName("Player")))
 				{
-					UGameplayStatics::ApplyDamage(hitResult.GetActor(), weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
-					hitInterface->GetHit(hitResult.ImpactPoint);
-					if (hitParticlesEnemy && GetWorld())
-						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), hitParticlesEnemy, hitResult.ImpactPoint);
+					AMainCharacter* player = Cast<AMainCharacter>(hitResult.GetActor());
+					if (player)
+					{
+						if (player->GetCharacterActionState() != ECharacterActions::GotHit)
+						{
+							UGameplayStatics::ApplyDamage(player, weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
+							hitInterface->GetHit(hitResult.ImpactPoint);
+							if (hitParticlesEnemy && GetWorld())
+								UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), hitParticlesEnemy, hitResult.ImpactPoint);
+						}
+					}
 				}
 			}
 			else
