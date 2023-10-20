@@ -179,8 +179,11 @@ void AMainCharacter::JumpPressed()
 {
 	if (GetCharacterState() == ECharacterState::Dead) return;
 
-	if(!animInstance->IsAnyMontagePlaying())
+	if (!animInstance->IsAnyMontagePlaying())
+	{
+		combatComp->ResetWeapon();
 		Jump();
+	}
 }
 
 void AMainCharacter::InteractPressed()

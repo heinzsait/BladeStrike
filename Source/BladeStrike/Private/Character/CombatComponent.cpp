@@ -50,15 +50,31 @@ void UCombatComponent::PerformAttack()
 	UAnimMontage* _attackMontage = nullptr;
 	if (!(character->GetCharacterMovement()->IsFalling() || character->GetCharacterMovement()->IsFlying())) // Character on ground
 	{
-		if(!character->isSprinting)
-			_attackMontage = mainWeapon->attackMontages[mainWeapon->attackIndex];
+		if (!character->isSprinting)
+		{
+			if (mainWeapon->attackMontages.Num() > mainWeapon->attackIndex)
+				_attackMontage = mainWeapon->attackMontages[mainWeapon->attackIndex];
+			else
+			{
+				mainWeapon->attackIndex = 0;
+				_attackMontage = mainWeapon->attackMontages[mainWeapon->attackIndex];
+			}
+		}
 		else
-			_attackMontage = mainWeapon->sprintAttackMontages[mainWeapon->attackIndex];
+			_attackMontage = mainWeapon->sprintAttackMontages[0];
 	}
 	else // Character in air
 	{
 		if (!character->isSprinting)
-			_attackMontage = mainWeapon->fallingAttackMontages[mainWeapon->attackIndex];
+		{
+			if (mainWeapon->fallingAttackMontages.Num() > mainWeapon->attackIndex)
+				_attackMontage = mainWeapon->fallingAttackMontages[mainWeapon->attackIndex];
+			else
+			{
+				mainWeapon->attackIndex = 0;
+				_attackMontage = mainWeapon->fallingAttackMontages[mainWeapon->attackIndex];
+			}
+		}
 		else 
 			_attackMontage = mainWeapon->sprintJumpAttackMontage;
 	}
@@ -80,10 +96,20 @@ void UCombatComponent::SelectNextAttack()
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, FString("selecting next montage"));
 
-	if ((mainWeapon->attackMontages.Num() - 1) > mainWeapon->attackIndex)
-		mainWeapon->attackIndex++;
+	if (!(character->GetCharacterMovement()->IsFalling() || character->GetCharacterMovement()->IsFlying()))
+	{
+		if ((mainWeapon->attackMontages.Num() - 1) > mainWeapon->attackIndex)
+			mainWeapon->attackIndex++;
+		else
+			mainWeapon->attackIndex = 0;
+	}
 	else
-		mainWeapon->attackIndex = 0;
+	{
+		if ((mainWeapon->fallingAttackMontages.Num() - 1) > mainWeapon->attackIndex)
+			mainWeapon->attackIndex++;
+		else
+			mainWeapon->attackIndex = 0;
+	}
 }
 
 void UCombatComponent::PerformDodge()

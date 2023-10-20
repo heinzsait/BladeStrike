@@ -27,9 +27,9 @@ public:
 	FORCEINLINE AWeapon* GetOffHandWeapon() const { return offHandWeapon; }
 	FORCEINLINE void SetOffHandWeapon(AWeapon* weapon) { offHandWeapon = weapon; }
 
-	FORCEINLINE void SaveAttack() { attackSaved = true; }
-	FORCEINLINE void ResetSavedAttack() { attackSaved = false; }
-	FORCEINLINE bool GetSavedAttack() const { return attackSaved; }
+	//FORCEINLINE void SaveAttack() { attackSaved = true; }
+	//FORCEINLINE void ResetSavedAttack() { attackSaved = false; }
+	//FORCEINLINE bool GetSavedAttack() const { return attackSaved; }
 
 	//FORCEINLINE void SetCanAttack(bool flag) { canAttack = flag; }
 	//FORCEINLINE bool CanAttack() const { return canAttack; }
@@ -70,11 +70,11 @@ private:
 	UPROPERTY()
 	AWeapon* offHandWeapon;
 
-	UPROPERTY()
-	bool attackSaved;
+	//UPROPERTY()
+	//bool attackSaved;
 
-	UPROPERTY()
-	bool canAttack = true;
+	//UPROPERTY()
+	//bool canAttack = true;
 
 	UPROPERTY()
 	UAnimInstance* animInstance;

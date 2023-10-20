@@ -348,15 +348,7 @@ FVector AEnemy::GetTranslationWrapTarget()
 	if(!player)
 		return FVector();
 
-
-	//float distance = FVector::Distance(player->GetActorLocation(), GetActorLocation());
-	//float wrapDistance = wrapTargetDistance - distance;
-	//wrapDistance = FMath::Clamp(wrapDistance, 0, wrapTargetDistance);
-	//wrapDistance = FMath::Abs(wrapDistance);
-
 	return (player->GetActorLocation() + (((GetActorLocation() - player->GetActorLocation()).GetSafeNormal()) * wrapTargetDistance));
-	//FVector targetPos = (player->GetActorLocation() + (((GetActorLocation() - player->GetActorLocation()).GetSafeNormal()))).GetSafeNormal();
-	//return (GetActorLocation());
 }
 
 
