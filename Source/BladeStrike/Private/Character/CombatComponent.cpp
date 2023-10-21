@@ -7,6 +7,7 @@
 #include "Components/AttributeComponent.h"
 #include "Items/Weapons/Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UCombatComponent::UCombatComponent()
@@ -88,6 +89,10 @@ void UCombatComponent::PerformAttack()
 			animInstance->Montage_Play(_attackMontage);
 
 			character->SetCharacterActionState(ECharacterActions::Attacking);
+
+
+			if (attackExertionSFX)
+				UGameplayStatics::PlaySoundAtLocation(this, attackExertionSFX, character->GetActorLocation());
 		}
 	}
 }

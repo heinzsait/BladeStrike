@@ -31,11 +31,23 @@ public:
 	UFUNCTION()
 	AWeapon* Clone();
 
+	UFUNCTION()
+	AWeapon* CreateShield();
+
 	UPROPERTY(EditAnywhere)
 	float weaponDamage = 10.0f;
 
 	UPROPERTY(EditAnywhere)
 	bool isOffHanded = false;
+
+	UPROPERTY(EditAnywhere)
+	bool hasShield = false;
+
+	UPROPERTY(EditAnywhere)
+	bool isShield = false;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AWeapon> shieldToSpawn;
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* swordDrawMontage;

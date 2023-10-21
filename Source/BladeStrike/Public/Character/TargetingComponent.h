@@ -29,6 +29,9 @@ public:
 
 	FORCEINLINE bool IsLocked() const { return isLocked; }
 
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* lockOnUI;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

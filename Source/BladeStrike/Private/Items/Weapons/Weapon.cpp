@@ -68,6 +68,32 @@ void AWeapon::Equip(USceneComponent* InParent)
 					CreateOffHandWeapon(player, InParent);
 				}
 			}
+
+			if (hasShield)
+			{
+				if (!isOffHanded)
+				{
+					if (player->GetCombatComponent()->GetOffHandWeapon() == nullptr)
+					{
+						//Create copy of this weapon to off hand...
+						AWeapon* offHandWeapon = CreateShield();
+
+						offHandWeapon->isOffHanded = true;
+						FAttachmentTransformRules _transformRules(EAttachmentRule::SnapToTarget, true);
+						offHandWeapon->ItemMesh->AttachToComponent(InParent, _transformRules, offHandSocket);
+						offHandWeapon->state = EItemState::Equipped;
+
+						offHandWeapon->SetOwner(InParent->GetOwner());
+						offHandWeapon->SetInstigator(Cast<APawn>(InParent->GetOwner()));
+						offHandWeapon->isAttached = true;
+
+						offHandPair = offHandWeapon;
+						offHandWeapon->mainHandPair = this;
+
+						player->GetCombatComponent()->SetOffHandWeapon(offHandWeapon);
+					}
+				}
+			}
 		}
 	}
 	else
@@ -166,12 +192,22 @@ void AWeapon::DropWeapon()
 	offHandPair = nullptr;
 }
 
-class AWeapon* AWeapon::Clone()
+AWeapon* AWeapon::Clone()
 {
 	FActorSpawnParameters Parameters;
 	Parameters.Template = this;
 
 	AWeapon* weapon = GetWorld()->SpawnActor<AWeapon>(GetClass(), Parameters);
+	weapon->SetOwner(GetOwner());
+
+	return weapon;
+}
+
+AWeapon* AWeapon::CreateShield()
+{
+	if (!shieldToSpawn) return nullptr;
+
+	AWeapon* weapon = GetWorld()->SpawnActor<AWeapon>(shieldToSpawn);
 	weapon->SetOwner(GetOwner());
 
 	return weapon;
@@ -192,6 +228,7 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!collisionEnabled) return;
+	if (isShield) return;
 	
 	const FVector start = traceStart->GetComponentLocation();
 	const FVector end = traceEnd->GetComponentLocation();

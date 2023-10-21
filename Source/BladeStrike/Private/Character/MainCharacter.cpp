@@ -5,6 +5,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Camera/CameraComponent.h"
 #include "Items/Weapons/Weapon.h"
 #include "Character/MainCharacterAnimInstance.h"
@@ -182,6 +183,8 @@ void AMainCharacter::JumpPressed()
 	if (PlayerCanJump())
 	{
 		combatComp->ResetWeapon();
+		if (jumpSFX)
+			UGameplayStatics::PlaySoundAtLocation(this, jumpSFX, GetActorLocation());
 		Jump();
 	}
 }

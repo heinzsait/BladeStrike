@@ -7,6 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values for this component's properties
 UTargetingComponent::UTargetingComponent()
@@ -15,7 +16,8 @@ UTargetingComponent::UTargetingComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	lockOnUI = CreateDefaultSubobject<UWidgetComponent>(FName("LockOn Dot"));
+	lockOnUI->SetVisibility(false);
 }
 
 
@@ -50,7 +52,7 @@ AActor* UTargetingComponent::FindTarget()
 	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypesArray; // object types to trace
 	objectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 
-	UKismetSystemLibrary::SphereTraceSingleForObjects(this, start, end, radius, objectTypesArray, false, actorsToIgnore, EDrawDebugTrace::ForDuration, hitResult, true);
+	UKismetSystemLibrary::SphereTraceSingleForObjects(this, start, end, radius, objectTypesArray, false, actorsToIgnore, EDrawDebugTrace::None, hitResult, true);
 
 	if (hitResult.GetActor())
 	{
@@ -100,6 +102,7 @@ void UTargetingComponent::UpdateTargetRotation()
 {	
 	if (!lockedOnTarget || !character)
 	{
+		lockOnUI->SetVisibility(false);
 		return;
 	}
 
@@ -109,6 +112,9 @@ void UTargetingComponent::UpdateTargetRotation()
 	//FRotator lerpRot = UKismetMathLibrary::RLerp(character->GetActorRotation(), targetRot, GetWorld()->DeltaTimeSeconds, true);
 	FRotator newRot = FRotator(character->Controller->GetControlRotation().Pitch, targetRot.Yaw, targetRot.Roll);
 	character->Controller->SetControlRotation(newRot);
+	
+	lockOnUI->SetVisibility(true);
+	lockOnUI->SetWorldLocation(lockedOnTarget->GetActorLocation());
 
 	if (FVector::Distance(lockedOnTarget->GetActorLocation(), character->GetActorLocation()) > 1500 || character->GetCharacterState() != ECharacterState::Equipped)
 	{
@@ -116,6 +122,8 @@ void UTargetingComponent::UpdateTargetRotation()
 		isLocked = false;
 		lockedOnTarget = nullptr;
 		character->GetStateManagerComponent()->SetCharacterRotationState(ECharacterRotation::Movement);
+
+		lockOnUI->SetVisibility(false);
 	}
 }
 
@@ -138,5 +146,7 @@ void UTargetingComponent::TargetedEnemyDied(AActor* enemy)
 		isLocked = false;
 		lockedOnTarget = nullptr;
 		character->GetStateManagerComponent()->SetCharacterRotationState(ECharacterRotation::Movement);
+
+		lockOnUI->SetVisibility(false);
 	}
 }

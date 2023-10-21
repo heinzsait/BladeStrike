@@ -52,6 +52,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* unarmedDodgeMontage;
 
+	UPROPERTY(EditAnywhere)
+	USoundBase* attackExertionSFX;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

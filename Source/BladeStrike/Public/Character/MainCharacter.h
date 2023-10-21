@@ -64,6 +64,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* healMontage;
 
+	UPROPERTY(EditAnywhere)
+	USoundBase* jumpSFX;
+
 	FORCEINLINE void SetOverlappingItem(AItem* item) { overlappingItem = item; }
 	//FORCEINLINE ECharacterState GetCharacterState() const { return charState; }
 
