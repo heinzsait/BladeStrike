@@ -12,5 +12,6 @@ void UDrinkingPotionDone_AN::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 	if (character)
 	{
 		character->SetCharacterActionState(ECharacterActions::None);
+		character->HealPlayer();
 	}
 }

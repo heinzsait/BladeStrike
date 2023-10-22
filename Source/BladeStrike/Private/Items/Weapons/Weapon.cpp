@@ -41,6 +41,11 @@ void AWeapon::BeginPlay()
 	weaponBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnBoxOverlap);
 }
 
+void AWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 void AWeapon::Equip(USceneComponent* InParent)
 {
 	FAttachmentTransformRules transformRules(EAttachmentRule::SnapToTarget, true);

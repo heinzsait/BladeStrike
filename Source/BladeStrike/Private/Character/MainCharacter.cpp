@@ -13,6 +13,7 @@
 #include "Components/AttributeComponent.h"
 #include "HUD/MainHUD.h"
 #include "HUD/MainOverlay.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -324,13 +325,14 @@ void AMainCharacter::UnBlock()
 
 void AMainCharacter::Heal()
 {
-	if (attributes && attributes->CanHeal() && GetCharacterActionState() == ECharacterActions::None && 
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
+	if (attributes && attributes->CanHeal() && GetCharacterActionState() == ECharacterActions::None &&
 		!(GetCharacterMovement()->IsFalling() || GetCharacterMovement()->IsFlying()))
 	{
 		if (animInstance && healMontage)
 		{
-			animInstance->Montage_Play(healMontage);			
-			attributes->Heal(50.0f);
+			animInstance->Montage_Play(healMontage);		
 
 			if (mainOverlay)
 			{
@@ -340,6 +342,16 @@ void AMainCharacter::Heal()
 			SetCharacterActionState(ECharacterActions::Healing);
 		}
 	}
+}
+
+void AMainCharacter::HealPlayer()
+{
+	if (GetCharacterState() == ECharacterState::Dead) return;
+
+	attributes->Heal(50.0f);
+
+	if (healFX)
+		UNiagaraFunctionLibrary::SpawnSystemAttached(healFX, GetRootComponent(), FName("Heal FX"), GetActorLocation(), FRotator::ZeroRotator, FVector::OneVector, EAttachLocation::SnapToTarget, true, ENCPoolMethod::None, true, true);
 }
 
 void AMainCharacter::SetDirection()

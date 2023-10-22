@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* Sphere;
 
+	UPROPERTY(VisibleAnywhere)
+	class UNiagaraComponent* itemFX;
+
 	UPROPERTY()
 	EItemState state;
 

@@ -3,6 +3,8 @@
 
 #include "Items/Item.h"
 #include "Components/SphereComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Character/MainCharacter.h"
 
 AItem::AItem()
@@ -17,8 +19,10 @@ AItem::AItem()
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	Sphere->SetupAttachment(GetRootComponent());
 
-	state = EItemState::Hovering;
+	itemFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Item FX"));
+	itemFX->SetupAttachment(GetRootComponent());
 
+	state = EItemState::Hovering;
 }
 
 void AItem::BeginPlay()
@@ -62,5 +66,18 @@ void AItem::Tick(float DeltaTime)
 	{
 		RunningTime += DeltaTime;
 		AddActorWorldOffset(FVector(0.f, 0.f, TransformedSin()));
+
+		if (itemFX)
+		{
+			itemFX->SetVisibility(true);
+			//itemFX->Get
+		}
+	}
+	else
+	{
+		if (itemFX)
+		{
+			itemFX->SetVisibility(false);
+		}
 	}
 }

@@ -65,6 +65,9 @@ public:
 	UAnimMontage* healMontage;
 
 	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* healFX;
+
+	UPROPERTY(EditAnywhere)
 	USoundBase* jumpSFX;
 
 	FORCEINLINE void SetOverlappingItem(AItem* item) { overlappingItem = item; }
@@ -101,6 +104,9 @@ public:
 
 	UFUNCTION()
 	bool isAlive();
+
+	UFUNCTION()
+	void HealPlayer();
 
 protected:
 	virtual void BeginPlay() override;
