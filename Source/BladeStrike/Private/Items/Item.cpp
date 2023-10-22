@@ -3,6 +3,7 @@
 
 #include "Items/Item.h"
 #include "Components/SphereComponent.h"
+#include "NiagaraSystem.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Character/MainCharacter.h"
@@ -65,12 +66,14 @@ void AItem::Tick(float DeltaTime)
 	if (state == EItemState::Hovering)
 	{
 		RunningTime += DeltaTime;
-		AddActorWorldOffset(FVector(0.f, 0.f, TransformedSin()));
+		ItemMesh->AddLocalOffset(FVector(0.f, 0.f, TransformedSin()));
+		itemFX->AddLocalOffset(FVector(0.f, 0.f, -TransformedSin()));
+		//AddActorWorldOffset(FVector(0.f, 0.f, TransformedSin()));
 
 		if (itemFX)
 		{
 			itemFX->SetVisibility(true);
-			//itemFX->Get
+			//itemFX->Activate();
 		}
 	}
 	else
@@ -78,6 +81,7 @@ void AItem::Tick(float DeltaTime)
 		if (itemFX)
 		{
 			itemFX->SetVisibility(false);
+			//itemFX->Deactivate();
 		}
 	}
 }

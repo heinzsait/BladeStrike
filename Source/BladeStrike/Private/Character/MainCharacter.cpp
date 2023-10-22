@@ -200,7 +200,7 @@ void AMainCharacter::InteractPressed()
 	if (GetCharacterState() == ECharacterState::Dead) return;
 
 	AWeapon* overlappingWeapon = Cast<AWeapon>(overlappingItem);
-	if (overlappingWeapon)
+	if (overlappingWeapon && !overlappingWeapon->isShield)
 	{
 		if (combatComp->GetMainWeapon() != nullptr)
 		{
@@ -349,9 +349,6 @@ void AMainCharacter::HealPlayer()
 	if (GetCharacterState() == ECharacterState::Dead) return;
 
 	attributes->Heal(50.0f);
-
-	if (healFX)
-		UNiagaraFunctionLibrary::SpawnSystemAttached(healFX, GetRootComponent(), FName("Heal FX"), GetActorLocation(), FRotator::ZeroRotator, FVector::OneVector, EAttachLocation::SnapToTarget, true, ENCPoolMethod::None, true, true);
 }
 
 void AMainCharacter::SetDirection()

@@ -78,25 +78,7 @@ void AWeapon::Equip(USceneComponent* InParent)
 			{
 				if (!isOffHanded)
 				{
-					if (player->GetCombatComponent()->GetOffHandWeapon() == nullptr)
-					{
-						//Create copy of this weapon to off hand...
-						AWeapon* offHandWeapon = CreateShield();
-
-						offHandWeapon->isOffHanded = true;
-						FAttachmentTransformRules _transformRules(EAttachmentRule::SnapToTarget, true);
-						offHandWeapon->ItemMesh->AttachToComponent(InParent, _transformRules, offHandSocket);
-						offHandWeapon->state = EItemState::Equipped;
-
-						offHandWeapon->SetOwner(InParent->GetOwner());
-						offHandWeapon->SetInstigator(Cast<APawn>(InParent->GetOwner()));
-						offHandWeapon->isAttached = true;
-
-						offHandPair = offHandWeapon;
-						offHandWeapon->mainHandPair = this;
-
-						player->GetCombatComponent()->SetOffHandWeapon(offHandWeapon);
-					}
+					CreateOffHandShield(player, InParent);
 				}
 			}
 		}
@@ -116,6 +98,8 @@ void AWeapon::Equip(USceneComponent* InParent)
 		}
 	}
 }
+
+
 
 void AWeapon::UnEquip(USceneComponent* InParent)
 {
@@ -142,6 +126,29 @@ void AWeapon::CreateOffHandWeapon(AMainCharacter* player, USceneComponent* InPar
 	{
 		//Create copy of this weapon to off hand...
 		AWeapon* offHandWeapon = Clone();
+
+		offHandWeapon->isOffHanded = true;
+		FAttachmentTransformRules _transformRules(EAttachmentRule::SnapToTarget, true);
+		offHandWeapon->ItemMesh->AttachToComponent(InParent, _transformRules, offHandSocket);
+		offHandWeapon->state = EItemState::Equipped;
+
+		offHandWeapon->SetOwner(InParent->GetOwner());
+		offHandWeapon->SetInstigator(Cast<APawn>(InParent->GetOwner()));
+		offHandWeapon->isAttached = true;
+
+		offHandPair = offHandWeapon;
+		offHandWeapon->mainHandPair = this;
+
+		player->GetCombatComponent()->SetOffHandWeapon(offHandWeapon);
+	}
+}
+
+void AWeapon::CreateOffHandShield(AMainCharacter* player, USceneComponent* InParent)
+{
+	if (player->GetCombatComponent()->GetOffHandWeapon() == nullptr)
+	{
+		//Create copy of this weapon to off hand...
+		AWeapon* offHandWeapon = CreateShield();
 
 		offHandWeapon->isOffHanded = true;
 		FAttachmentTransformRules _transformRules(EAttachmentRule::SnapToTarget, true);
@@ -193,6 +200,16 @@ void AWeapon::DropWeapon()
 	SetOwner(nullptr);
 	SetInstigator(nullptr);
 	isWeaponEnemy = false;
+
+	FHitResult hitResult;
+	FCollisionQueryParams collisionParams;
+	//collisionParams.
+	ItemMesh->LineTraceComponent(hitResult, GetActorLocation() + FVector(0.0f, 0.0f, 300.0f), GetActorLocation() - FVector(0.0f, 0.0f, 300.0f), collisionParams);
+
+	if (hitResult.GetActor())
+	{
+		SetActorLocation(hitResult.ImpactPoint);
+	}
 
 	offHandPair = nullptr;
 }

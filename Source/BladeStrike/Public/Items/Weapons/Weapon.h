@@ -22,6 +22,8 @@ public:
 	UFUNCTION()
 	void Equip(USceneComponent* InParent);
 
+	void CreateOffHandShield(AMainCharacter* player, USceneComponent* InParent);
+
 	UFUNCTION()
 	void UnEquip(USceneComponent* InParent);
 
