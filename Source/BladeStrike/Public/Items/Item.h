@@ -39,17 +39,24 @@ protected:
 	UFUNCTION()
 	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* ItemMesh;
 
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* Sphere;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UNiagaraComponent* itemFX;
 
 	UPROPERTY()
 	EItemState state;
+
+	UFUNCTION()
+	void HideItemVFX();
+
+	UFUNCTION()
+	void ShowItemVFX();
+
 
 private:
 

@@ -56,6 +56,8 @@ void AWeapon::Equip(USceneComponent* InParent)
 
 
 	state = EItemState::Equipped;
+	HideItemVFX();
+
 	SetOwner(InParent->GetOwner());
 	SetInstigator(Cast<APawn>(InParent->GetOwner()));
 	isAttached = true;
@@ -108,7 +110,9 @@ void AWeapon::UnEquip(USceneComponent* InParent)
 		ItemMesh->AttachToComponent(InParent, transformRules, attachSocket);
 	else
 		ItemMesh->AttachToComponent(InParent, transformRules, offHandAttachSocket);
+
 	state = EItemState::Unequipped;
+	HideItemVFX();
 
 	if (!isWeaponEnemy)
 	{
@@ -131,6 +135,7 @@ void AWeapon::CreateOffHandWeapon(AMainCharacter* player, USceneComponent* InPar
 		FAttachmentTransformRules _transformRules(EAttachmentRule::SnapToTarget, true);
 		offHandWeapon->ItemMesh->AttachToComponent(InParent, _transformRules, offHandSocket);
 		offHandWeapon->state = EItemState::Equipped;
+		offHandWeapon->HideItemVFX();
 
 		offHandWeapon->SetOwner(InParent->GetOwner());
 		offHandWeapon->SetInstigator(Cast<APawn>(InParent->GetOwner()));
@@ -154,6 +159,7 @@ void AWeapon::CreateOffHandShield(AMainCharacter* player, USceneComponent* InPar
 		FAttachmentTransformRules _transformRules(EAttachmentRule::SnapToTarget, true);
 		offHandWeapon->ItemMesh->AttachToComponent(InParent, _transformRules, offHandSocket);
 		offHandWeapon->state = EItemState::Equipped;
+		offHandWeapon->HideItemVFX();
 
 		offHandWeapon->SetOwner(InParent->GetOwner());
 		offHandWeapon->SetInstigator(Cast<APawn>(InParent->GetOwner()));
@@ -177,6 +183,7 @@ void AWeapon::CreateOffHandWeapon_Enemy(AEnemy* enemy, USceneComponent* InParent
 		FAttachmentTransformRules _transformRules(EAttachmentRule::SnapToTarget, true);
 		offHandWeapon->ItemMesh->AttachToComponent(InParent, _transformRules, offHandSocket);
 		offHandWeapon->state = EItemState::Equipped;
+		offHandWeapon->HideItemVFX();
 
 		offHandWeapon->SetOwner(InParent->GetOwner());
 		offHandWeapon->SetInstigator(Cast<APawn>(InParent->GetOwner()));
@@ -195,21 +202,14 @@ void AWeapon::DropWeapon()
 	FDetachmentTransformRules transformRules(EDetachmentRule::KeepWorld, true);
 	ItemMesh->DetachFromComponent(transformRules);
 	SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
+
 	state = EItemState::Hovering;
+	ShowItemVFX();
+
 	isAttached = false;
 	SetOwner(nullptr);
 	SetInstigator(nullptr);
 	isWeaponEnemy = false;
-
-	FHitResult hitResult;
-	FCollisionQueryParams collisionParams;
-	//collisionParams.
-	ItemMesh->LineTraceComponent(hitResult, GetActorLocation() + FVector(0.0f, 0.0f, 300.0f), GetActorLocation() - FVector(0.0f, 0.0f, 300.0f), collisionParams);
-
-	if (hitResult.GetActor())
-	{
-		SetActorLocation(hitResult.ImpactPoint);
-	}
 
 	offHandPair = nullptr;
 }

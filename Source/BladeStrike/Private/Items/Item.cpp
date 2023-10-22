@@ -7,6 +7,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Character/MainCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 AItem::AItem()
 {
@@ -32,6 +33,13 @@ void AItem::BeginPlay()
 
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
 	Sphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
+
+	if (ItemMesh && itemFX)
+	{
+		itemFX->SetVariableStaticMesh(TEXT("ItemMesh"), ItemMesh->GetStaticMesh());
+
+		ShowItemVFX();
+	}
 }
 
 float AItem::TransformedSin()
@@ -63,25 +71,68 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (state == EItemState::Hovering)
-	{
-		RunningTime += DeltaTime;
-		ItemMesh->AddLocalOffset(FVector(0.f, 0.f, TransformedSin()));
-		itemFX->AddLocalOffset(FVector(0.f, 0.f, -TransformedSin()));
-		//AddActorWorldOffset(FVector(0.f, 0.f, TransformedSin()));
+	//if (state == EItemState::Hovering)
+	//{
+	//	//RunningTime += DeltaTime;
+	//	//ItemMesh->AddLocalOffset(FVector(0.f, 0.f, TransformedSin()));
+	//	//itemFX->AddLocalOffset(FVector(0.f, 0.f, -TransformedSin()));
+	//	//AddActorWorldOffset(FVector(0.f, 0.f, TransformedSin()));
 
-		if (itemFX)
+	//	if (itemFX && ItemMesh)
+	//	{
+	//		itemFX->SetVisibility(true);
+	//		ItemMesh->SetVisibility(false);
+	//	}
+	//}
+	//else
+	//{ 
+	//	if (itemFX && ItemMesh)
+	//	{
+	//		itemFX->SetVisibility(false);
+	//		ItemMesh->SetVisibility(true);
+	//	}
+	//}
+}
+
+
+
+void AItem::ShowItemVFX()
+{
+	if (itemFX && ItemMesh)
+	{
+		itemFX->SetVisibility(true);
+		ItemMesh->SetVisibility(false);
+
+		TArray<AActor*> actorsToIgnore;
+		actorsToIgnore.Add(this);
+		FHitResult hitResult;
+
+		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
+		ObjectTypesArray.Reserve(1);
+		ObjectTypesArray.Emplace(ECollisionChannel::ECC_WorldStatic);
+
+		UKismetSystemLibrary::SphereTraceSingleForObjects(this, ItemMesh->GetComponentLocation(), ItemMesh->GetComponentLocation() - FVector(0.0f, 0.0f, 500.0f), 10.0f, ObjectTypesArray, false, actorsToIgnore, EDrawDebugTrace::None, hitResult, true);
+
+		if (hitResult.GetActor())
 		{
-			itemFX->SetVisibility(true);
-			//itemFX->Activate();
+			SetActorLocation(hitResult.ImpactPoint + FVector(0.0f, 0.0f, 50.0f));
+
+			/*if (GetWorld()) 
+				DrawDebugPoint(GetWorld(), hitResult.ImpactPoint, 15.f, FColor::Red, true, 10.0f);*/
+
+			/*if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, FString("Impact Point = " + hitResult.ImpactPoint.ToString()));
+			}*/
 		}
 	}
-	else
+}
+
+void AItem::HideItemVFX()
+{
+	if (itemFX && ItemMesh)
 	{
-		if (itemFX)
-		{
-			itemFX->SetVisibility(false);
-			//itemFX->Deactivate();
-		}
+		itemFX->SetVisibility(false);
+		ItemMesh->SetVisibility(true);
 	}
 }

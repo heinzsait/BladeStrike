@@ -99,8 +99,8 @@ void UCombatComponent::PerformAttack()
 
 void UCombatComponent::SelectNextAttack()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, FString("selecting next montage"));
+	/*if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, FString("selecting next montage"));*/
 
 	if (!(character->GetCharacterMovement()->IsFalling() || character->GetCharacterMovement()->IsFlying()))
 	{
