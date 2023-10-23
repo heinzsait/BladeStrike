@@ -105,6 +105,9 @@ public:
 	UFUNCTION()
 	void HealPlayer();
 
+	UFUNCTION()
+	void Respawn(FVector location);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -220,6 +223,8 @@ private:
 
 	UFUNCTION()
 	void DirectionalHitReact(const FVector& impactPoint);
+
+	FName GetHitDirection(const FVector& impactPoint);
 
 	UFUNCTION()
 	void PlayHitReaction(const FName sectionName);

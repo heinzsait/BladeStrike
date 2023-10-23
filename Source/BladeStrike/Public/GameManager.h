@@ -46,6 +46,15 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool IsPlayerAttacking();
 
+	UFUNCTION(BlueprintCallable)
+	void SetCheckpoint(FVector location);
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetCheckpoint();
+
+	UFUNCTION()
+	class AMainCharacter* GetPlayer();
+
 private:
 	bool isBossMusicPlaying = false;
 	bool isLevelMusicPlaying = false;
@@ -54,4 +63,7 @@ private:
 	UAudioComponent* bossMusicComp;
 
 	bool playerAttacking = false;
+
+	bool checkpointSet = false;
+	FVector lastCheckpointLocation = FVector::ZeroVector;
 };

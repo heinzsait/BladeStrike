@@ -19,6 +19,9 @@ public:
 	void ReceiveDamage(float dmg);
 
 	UFUNCTION()
+	void RegenFullHealth();
+
+	UFUNCTION()
 	float GetHealthPercent();
 
 	UFUNCTION()

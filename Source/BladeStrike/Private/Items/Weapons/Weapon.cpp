@@ -284,7 +284,8 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 					{
 						if (player->GetCharacterActionState() != ECharacterActions::GotHit)
 						{
-							UGameplayStatics::ApplyDamage(player, weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
+							//UGameplayStatics::ApplyDamage(player, weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
+							UGameplayStatics::ApplyPointDamage(player, weaponDamage, hitResult.ImpactNormal, hitResult, GetInstigatorController(), this, UDamageType::StaticClass());
 							hitInterface->GetHit(hitResult.ImpactPoint);
 							if (hitParticlesEnemy && GetWorld())
 								UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), hitParticlesEnemy, hitResult.ImpactPoint);
@@ -294,7 +295,8 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 			}
 			else
 			{
-				UGameplayStatics::ApplyDamage(hitResult.GetActor(), weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
+				//UGameplayStatics::ApplyDamage(hitResult.GetActor(), weaponDamage, GetInstigatorController(), this, UDamageType::StaticClass());
+				UGameplayStatics::ApplyPointDamage(hitResult.GetActor(), weaponDamage, hitResult.ImpactNormal, hitResult, GetInstigatorController(), this, UDamageType::StaticClass());
 				hitInterface->GetHit(hitResult.ImpactPoint);
 				if (hitParticles && GetWorld())
 					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), hitParticles, hitResult.ImpactPoint);

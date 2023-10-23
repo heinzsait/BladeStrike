@@ -47,6 +47,28 @@ bool AEnemy::isAlive()
 }
 
 
+void AEnemy::RegenEnemy()
+{
+	if (attributes)
+	{
+		attributes->RegenFullHealth();
+
+		if (healthBarWidget)
+		{
+			healthBarWidget->SetHealthPercentage(1.0f);
+			healthBarWidget->SetVisibility(false);
+		}
+
+		if (isBoss)
+		{
+			if (player && player->GetMainOverlay())
+			{
+				player->GetMainOverlay()->SetBossHealthPercentage(1.0f);
+			}
+		}
+	}
+}
+
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
@@ -108,12 +130,11 @@ void AEnemy::RotateTowardsPlayer()
 
 void AEnemy::GetHit(const FVector& impactPoint)
 {
-	//if (actionState == ECharacterActions::Dodging) return;
-
 	hitImpactPoint = impactPoint;
 	if (isAlive())
 	{
-		DirectionalHitReact(impactPoint);
+		if (!isDodgingMontagePlaying)
+			DirectionalHitReact(impactPoint);
 	}
 	else
 	{
@@ -233,6 +254,11 @@ void AEnemy::Die()
 
 	currentState = ECharacterState::Dead;
 
+	if (dieSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, dieSFX, GetActorLocation());
+	}
+
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetLifeSpan(3.0f);
@@ -264,6 +290,7 @@ float AEnemy::PerformAction(EAIAttackType _attackType)
 			if (!GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())//Montage_IsPlaying(dodgeMontage))
 			{
 				GetMesh()->GetAnimInstance()->Montage_Play(dodgeMontage);
+				isDodgingMontagePlaying = true;
 			}
 		}
 

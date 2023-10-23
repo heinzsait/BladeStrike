@@ -61,6 +61,9 @@ public:
 	UFUNCTION()
 	bool isAlive();
 
+	UPROPERTY()
+	bool isDodgingMontagePlaying = false;
+
 	UFUNCTION()
 	FVector GetTranslationWrapTarget();
 
@@ -72,6 +75,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float wrapTargetDistance = 75.0f;
+
+	UFUNCTION()
+	void RegenEnemy();
 
 protected:
 	virtual void BeginPlay() override;
@@ -101,6 +107,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* dodgeMontage;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* dieSFX;
 
 	UPROPERTY(EditAnywhere)
 	class UAttributeComponent* attributes;

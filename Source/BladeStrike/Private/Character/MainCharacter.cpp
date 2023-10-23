@@ -2,6 +2,7 @@
 
 
 #include "Character/MainCharacter.h"
+#include "Enemy/Enemy.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -14,6 +15,7 @@
 #include "HUD/MainHUD.h"
 #include "HUD/MainOverlay.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Engine/DamageEvents.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -350,6 +352,7 @@ void AMainCharacter::HealPlayer()
 	}
 }
 
+
 void AMainCharacter::SetDirection()
 {
 	FVector v = FVector(inputZ, -inputX, 0);
@@ -438,13 +441,13 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void AMainCharacter::GetHit(const FVector& impactPoint)
 {
-	if (stateManager->GetCharacterActionState() == ECharacterActions::Dodging) return;
 	/*if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::Printf(TEXT("Player Got Hit")));*/
 
 	if (isAlive())
 	{
-		DirectionalHitReact(impactPoint);
+		if (stateManager->GetCharacterActionState() != ECharacterActions::Dodging)
+			DirectionalHitReact(impactPoint);
 	}
 	else
 	{
@@ -453,6 +456,21 @@ void AMainCharacter::GetHit(const FVector& impactPoint)
 }
 
 void AMainCharacter::DirectionalHitReact(const FVector& impactPoint)
+{
+	auto section = GetHitDirection(impactPoint);
+
+	if ((GetCharacterActionState() == ECharacterActions::Blocking) && (section != "FromBack"))
+	{
+		if(animInstance)
+			animInstance->Montage_Play(combatComp->GetMainWeapon()->blockHitMontage);
+	}
+	else
+	{
+		PlayHitReaction(section);
+	}
+}
+
+FName AMainCharacter::GetHitDirection(const FVector& impactPoint)
 {
 	const FVector forward = GetActorForwardVector();
 	const FVector _impactPoint = FVector(impactPoint.X, impactPoint.Y, GetActorLocation().Z);
@@ -467,15 +485,7 @@ void AMainCharacter::DirectionalHitReact(const FVector& impactPoint)
 	else if (O >= -135.f && O < -45.f)  section = FName("FromLeft");
 	else if (O >= 45.f && O < 135.f)  section = FName("FromRight");
 
-	if ((GetCharacterActionState() == ECharacterActions::Blocking) && section == "FromFront")
-	{
-		if(animInstance)
-			animInstance->Montage_Play(combatComp->GetMainWeapon()->blockHitMontage);
-	}
-	else
-	{
-		PlayHitReaction(section);
-	}
+	return section;
 }
 
 void AMainCharacter::PlayHitReaction(const FName sectionName)
@@ -490,6 +500,13 @@ void AMainCharacter::PlayHitReaction(const FName sectionName)
 
 float AMainCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	FPointDamageEvent* const PointDamageEvent = (FPointDamageEvent*)&DamageEvent;	
+	auto section = GetHitDirection(PointDamageEvent->HitInfo.ImpactPoint);
+
+	if ((GetCharacterActionState() == ECharacterActions::Blocking) && (section != "FromBack"))
+	{
+		return 0.0f;
+	}
 	if (attributes)
 	{
 		attributes->ReceiveDamage(DamageAmount);
@@ -527,5 +544,43 @@ void AMainCharacter::Die()
 		playerController->bShowMouseCursor = true;
 		playerController->bEnableClickEvents = true;
 		playerController->bEnableMouseOverEvents = true;
+	}
+}
+
+
+void AMainCharacter::Respawn(FVector location)
+{
+	SetActorLocation(location);
+
+	isDead = false;
+
+	SetCharacterState(ECharacterState::Equipped);
+
+	if (mainOverlay)
+	{
+		attributes->RegenFullHealth();
+		mainOverlay->SetHealthPercentage(attributes->GetHealthPercent());
+		mainOverlay->HideYouDied();
+	}
+
+	if (animInstance)
+	{
+		animInstance->isAlive = true;
+	}
+
+	playerController->bShowMouseCursor = false;
+	playerController->bEnableClickEvents = false;
+	playerController->bEnableMouseOverEvents = false;
+
+	TArray<AActor*> allEnemies;
+	UGameplayStatics::GetAllActorsOfClassWithTag(this, AEnemy::StaticClass(), FName("Enemy"), allEnemies);
+
+	for (AActor* _enemy : allEnemies)
+	{
+		AEnemy* enemy = Cast<AEnemy>(_enemy);
+		if (enemy)
+		{
+			enemy->RegenEnemy();
+		}
 	}
 }

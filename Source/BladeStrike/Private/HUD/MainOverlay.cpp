@@ -7,6 +7,7 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameManager.h"
+#include "Character/MainCharacter.h"
 
 void UMainOverlay::NativeConstruct()
 {
@@ -65,5 +66,20 @@ void UMainOverlay::HideYouDied()
 
 void UMainOverlay::OnRetryClicked()
 {
-	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
+	UGameManager* GM = GetWorld()->GetSubsystem<UGameManager>();
+	if (GM)
+	{
+		if (GM->GetCheckpoint() != FVector::ZeroVector)
+		{
+			AMainCharacter* player = GM->GetPlayer();
+			if (player)
+			{
+				player->Respawn(GM->GetCheckpoint());
+			}
+		}
+		else
+			UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
+	}
+	else
+		UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 }

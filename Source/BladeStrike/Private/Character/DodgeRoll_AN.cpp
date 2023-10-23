@@ -41,5 +41,6 @@ void UDodgeRoll_AN::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBas
 	if (enemy)
 	{
 		enemy->actionState = ECharacterActions::None;
+		enemy->isDodgingMontagePlaying = false;
 	}
 }

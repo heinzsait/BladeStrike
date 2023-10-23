@@ -2,6 +2,7 @@
 
 
 #include "GameManager.h"
+#include "Character/MainCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/AudioComponent.h"
 
@@ -84,4 +85,24 @@ void UGameManager::SetPlayerAttacking(bool flag)
 bool UGameManager::IsPlayerAttacking()
 {
 	return playerAttacking;
+}
+
+void UGameManager::SetCheckpoint(FVector location)
+{
+	checkpointSet = true;
+	lastCheckpointLocation = location;
+}
+
+FVector UGameManager::GetCheckpoint()
+{
+	if (checkpointSet)
+		return lastCheckpointLocation;
+	else
+		return FVector::ZeroVector;
+}
+
+AMainCharacter* UGameManager::GetPlayer()
+{
+	AMainCharacter* player = Cast<AMainCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	return player;
 }
