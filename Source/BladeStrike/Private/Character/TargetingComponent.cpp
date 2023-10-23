@@ -80,8 +80,8 @@ void UTargetingComponent::LockTarget()
 		AActor* target = FindTarget();
 		if (target)
 		{
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString("target = " + target->GetName()));
+			/*if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString("target = " + target->GetName()));*/
 
 			lockedOnTarget = target;
 			isLocked = true;
@@ -90,8 +90,8 @@ void UTargetingComponent::LockTarget()
 		}
 		else
 		{
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString("no target found"));
+			/*if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString("no target found"));*/
 
 			lockedOnTarget = nullptr;
 		}

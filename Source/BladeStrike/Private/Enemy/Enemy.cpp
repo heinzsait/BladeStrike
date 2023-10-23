@@ -108,7 +108,7 @@ void AEnemy::RotateTowardsPlayer()
 
 void AEnemy::GetHit(const FVector& impactPoint)
 {
-	if (actionState == ECharacterActions::Dodging) return;
+	//if (actionState == ECharacterActions::Dodging) return;
 
 	hitImpactPoint = impactPoint;
 	if (isAlive())
@@ -256,12 +256,12 @@ float AEnemy::PerformAction(EAIAttackType _attackType)
 		break;
 
 	case ECharacterActions::Dodging:
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString("Perform Dodge..."));
+		/*if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString("Perform Dodge..."));*/
 
 		if (dodgeMontage)
 		{
-			if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(dodgeMontage))
+			if (!GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())//Montage_IsPlaying(dodgeMontage))
 			{
 				GetMesh()->GetAnimInstance()->Montage_Play(dodgeMontage);
 			}
