@@ -6,6 +6,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameManager.h"
 
 void UMainOverlay::NativeConstruct()
 {
@@ -31,11 +32,25 @@ void UMainOverlay::SetBossHealthPercentage(float hp)
 void UMainOverlay::ShowBossHealth()
 {
 	bossHealthBar->SetVisibility(ESlateVisibility::Visible);
+
+	UGameManager* GM = GetWorld()->GetSubsystem<UGameManager>();
+	if (GM)
+	{
+		GM->StopWorldMusic();
+		GM->PlayBossMusic();
+	}
 }
 
 void UMainOverlay::HideBossHealth()
 {
 	bossHealthBar->SetVisibility(ESlateVisibility::Hidden);
+
+	UGameManager* GM = GetWorld()->GetSubsystem<UGameManager>();
+	if (GM)
+	{
+		GM->StopBossMusic();
+		GM->PlayWorldMusic();
+	}
 }
 
 void UMainOverlay::ShowYouDied()

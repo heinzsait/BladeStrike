@@ -95,5 +95,7 @@ private:
 
 	UPROPERTY()
 	class AMainCharacter* character;
+
+	class UGameManager* GM;
 		
 };

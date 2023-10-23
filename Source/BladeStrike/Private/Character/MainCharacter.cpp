@@ -332,12 +332,7 @@ void AMainCharacter::Heal()
 	{
 		if (animInstance && healMontage)
 		{
-			animInstance->Montage_Play(healMontage);		
-
-			if (mainOverlay)
-			{
-				mainOverlay->SetHealthPercentage(attributes->GetHealthPercent());
-			}
+			animInstance->Montage_Play(healMontage);	
 
 			SetCharacterActionState(ECharacterActions::Healing);
 		}
@@ -348,7 +343,11 @@ void AMainCharacter::HealPlayer()
 {
 	if (GetCharacterState() == ECharacterState::Dead) return;
 
-	attributes->Heal(50.0f);
+	if (attributes && mainOverlay)
+	{
+		attributes->Heal(50.0f);
+		mainOverlay->SetHealthPercentage(attributes->GetHealthPercent());
+	}
 }
 
 void AMainCharacter::SetDirection()

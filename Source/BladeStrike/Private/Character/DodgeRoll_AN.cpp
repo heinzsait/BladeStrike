@@ -4,6 +4,7 @@
 #include "Character/DodgeRoll_AN.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Character/MainCharacter.h"
+#include "Enemy/Enemy.h"
 #include "Kismet/KismetMathLibrary.h"
 
 void UDodgeRoll_AN::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
@@ -34,5 +35,11 @@ void UDodgeRoll_AN::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBas
 			character->SetCharacterActionState(ECharacterActions::Blocking);
 		else
 			character->SetCharacterActionState(ECharacterActions::None);
+	}
+
+	auto enemy = Cast<AEnemy>(MeshComp->GetOwner());
+	if (enemy)
+	{
+		enemy->actionState = ECharacterActions::None;
 	}
 }

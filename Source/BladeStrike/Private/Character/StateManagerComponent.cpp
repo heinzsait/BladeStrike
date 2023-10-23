@@ -6,6 +6,7 @@
 #include "Character/MainCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameManager.h"
 
 // Sets default values for this component's properties
 UStateManagerComponent::UStateManagerComponent()
@@ -35,6 +36,7 @@ void UStateManagerComponent::BeginPlay()
 	rotationState = ECharacterRotation::Movement;
 	character = Cast<AMainCharacter>(GetOwner());
 	
+	GM = GetWorld()->GetSubsystem<UGameManager>();
 }
 
 
@@ -133,6 +135,9 @@ void UStateManagerComponent::OnCharActionStateBegin(const ECharacterActions stat
 
 	case ECharacterActions::Attacking:
 
+		if (GM)
+			GM->SetPlayerAttacking(true);
+	
 		break;
 
 	case ECharacterActions::Dodging:
@@ -159,6 +164,10 @@ void UStateManagerComponent::OnCharActionStateEnded(const ECharacterActions stat
 
 	case ECharacterActions::Attacking:
 		character->GetCombatComponent()->SelectNextAttack();
+
+		if (GM)
+			GM->SetPlayerAttacking(false);
+
 		break;
 
 	case ECharacterActions::Dodging:

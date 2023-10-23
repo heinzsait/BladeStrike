@@ -100,6 +100,9 @@ private:
 	UAnimMontage* hitReactionMontages;
 
 	UPROPERTY(EditAnywhere)
+	UAnimMontage* dodgeMontage;
+
+	UPROPERTY(EditAnywhere)
 	class UAttributeComponent* attributes;
 
 	UPROPERTY()
