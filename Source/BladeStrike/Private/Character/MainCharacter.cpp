@@ -443,7 +443,7 @@ void AMainCharacter::GetHit(const FVector& impactPoint)
 {
 	/*if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::Printf(TEXT("Player Got Hit")));*/
-
+	GetCombatComponent()->ResetWeapon();
 	if (isAlive())
 	{
 		if (stateManager->GetCharacterActionState() != ECharacterActions::Dodging)
